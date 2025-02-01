@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/logger"
+	"github.com/Blocktunium/gonyx/internal/logger"
 	"github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"time"

@@ -1,4 +1,4 @@
-module github.com/abolfazlbeh/zhycan
+module github.com/Blocktunium/gonyx
 
 go 1.19
 

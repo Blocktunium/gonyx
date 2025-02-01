@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
+	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/radovskyb/watcher"
 	"log"
 	"os"

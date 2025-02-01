@@ -1,6 +1,6 @@
 package engine
 
-import "github.com/abolfazlbeh/zhycan/pkg/http"
+import "github.com/Blocktunium/gonyx/pkg/http"
 
 type RestfulApp interface {
 	Routes() []http.HttpRoute

@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/config"
+	"github.com/Blocktunium/gonyx/internal/config"
 	"testing"
 )
 

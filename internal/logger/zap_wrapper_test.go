@@ -3,8 +3,8 @@ package logger
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
 	"os"
 	"testing"
 	"time"

@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/db"
+	"github.com/Blocktunium/gonyx/internal/db"
 	"gorm.io/gorm"
 )
 

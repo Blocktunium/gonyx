@@ -74,8 +74,8 @@ package main
 import (
     "fmt"
     "{{.ProjectName}}/commands"
-    "github.com/abolfazlbeh/zhycan/pkg/config"
-    "github.com/abolfazlbeh/zhycan/pkg/logger"
+    "github.com/Blocktunium/gonyx/pkg/config"
+    "github.com/Blocktunium/gonyx/pkg/logger"
     "time"
 )
 
@@ -118,7 +118,7 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/abolfazlbeh/zhycan/pkg/cli"
+	"github.com/Blocktunium/gonyx/pkg/cli"
 	"os"
 	"{{.ProjectName}}/app"
 )
@@ -379,7 +379,7 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/pkg/http"
+	"github.com/Blocktunium/gonyx/pkg/http"
 	"github.com/gin-gonic/gin"
 	"{{.ProjectName}}/app/proto/greeter"
 )
@@ -443,7 +443,7 @@ File: "app/app.go" --> {{ .Time.Format .TimeFormat }} by {{.CreatorUserName}}
 package app
 
 import (
-	"github.com/abolfazlbeh/zhycan/pkg/engine"
+	"github.com/Blocktunium/gonyx/pkg/engine"
 	"google.golang.org/grpc"
 	"{{.ProjectName}}/app/proto/greeter"
 )
@@ -477,7 +477,7 @@ package app
 
 import (
 	"errors"
-	"github.com/abolfazlbeh/zhycan/pkg/db"
+	"github.com/Blocktunium/gonyx/pkg/db"
 	"gorm.io/gorm"
 )
 

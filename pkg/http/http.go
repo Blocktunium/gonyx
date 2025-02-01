@@ -2,7 +2,7 @@ package http
 
 import (
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/http"
+	"github.com/Blocktunium/gonyx/internal/http"
 	"github.com/gin-gonic/gin"
 )
 

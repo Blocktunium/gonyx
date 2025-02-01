@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/http/types"
+	"github.com/Blocktunium/gonyx/internal/http/types"
 	"github.com/fufuok/favicon"
 	"github.com/gin-gonic/gin"
 )

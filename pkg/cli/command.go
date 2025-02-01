@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/command"
+	"github.com/Blocktunium/gonyx/internal/command"
 	"github.com/spf13/cobra"
 )
 

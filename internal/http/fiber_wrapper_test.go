@@ -3,7 +3,7 @@ package http
 import (
 	"errors"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/http/types"
+	"github.com/Blocktunium/gonyx/internal/http/types"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 	"io"

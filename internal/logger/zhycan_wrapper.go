@@ -4,16 +4,16 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
-	"github.com/abolfazlbeh/zhycan/internal/utils"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/utils"
 	"gorm.io/gorm"
 	"log"
 	"os"
 	"sync"
 	"time"
 
-	"github.com/abolfazlbeh/zhycan/internal/logger/helpers"
+	"github.com/Blocktunium/gonyx/internal/logger/helpers"
 )
 
 type OutputOption struct {
