@@ -352,7 +352,7 @@ DerivedData/
             "expose_headers": [],
             "max_age": 0,
             "allow_wildcard": true,
-            "allow_browser_extension" false,
+            "allow_browser_extension": false,
             "custom_schemes": [],
             "allow_websockets": false,
             "allow_files": false,
