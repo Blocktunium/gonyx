@@ -3,7 +3,7 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
+	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/spf13/cobra"
 	"os"
 	"os/user"

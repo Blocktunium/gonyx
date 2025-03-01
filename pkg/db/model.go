@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/db"
-	"github.com/abolfazlbeh/zhycan/internal/logger"
+	"github.com/Blocktunium/gonyx/internal/db"
+	"github.com/Blocktunium/gonyx/internal/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )

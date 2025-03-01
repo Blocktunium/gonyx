@@ -2,8 +2,8 @@ package logger
 
 import (
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
 	"io"
 	"os"
 	"reflect"

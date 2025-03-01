@@ -2,9 +2,9 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/http/types"
-	"github.com/abolfazlbeh/zhycan/internal/utils"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/http/types"
+	"github.com/Blocktunium/gonyx/internal/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 	"sync"

@@ -2,7 +2,7 @@ package cache
 
 import (
 	"context"
-	"github.com/abolfazlbeh/zhycan/internal/cache"
+	"github.com/Blocktunium/gonyx/internal/cache"
 	"time"
 )
 

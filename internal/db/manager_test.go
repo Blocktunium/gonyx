@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/config"
+	"github.com/Blocktunium/gonyx/internal/config"
 	"gorm.io/gorm"
 	"reflect"
 	"testing"

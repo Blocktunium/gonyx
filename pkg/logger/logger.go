@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/logger"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/logger"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
 	"time"
 )
 

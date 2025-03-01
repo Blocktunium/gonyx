@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/http/middlewares"
-	"github.com/abolfazlbeh/zhycan/internal/http/types"
-	"github.com/abolfazlbeh/zhycan/internal/logger"
-	logTypes "github.com/abolfazlbeh/zhycan/internal/logger/types"
-	"github.com/abolfazlbeh/zhycan/internal/utils"
-	"github.com/gin-contrib/cors"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/http/middlewares"
+	"github.com/Blocktunium/gonyx/internal/http/types"
+	"github.com/Blocktunium/gonyx/internal/logger"
+	logTypes "github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -141,117 +141,20 @@ func (s *GinServer) attachMiddlewares(orders []string, rawConfig map[string]inte
 					}
 				}
 			case "cors":
-				corsConfig := cors.DefaultConfig()
-				// Let's add additional Data in config if it's existed
-				if loggerCfg, ok := rawConfig[item].(map[string]interface{}); ok {
-					if allowAllOrigins, ok := loggerCfg["allow_all_origins"].(bool); ok {
-						corsConfig.AllowAllOrigins = allowAllOrigins
+				s.baseRouter.Use(func(c *gin.Context) {
+					c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+					c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+					c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+					c.Writer.Header().Set("Access-Control-Allow-Methods", strings.Join(s.defaultRequestMethods, ","))
+
+					if c.Request.Method == "OPTIONS" {
+						c.AbortWithStatus(204)
+						return
 					}
 
-					if allowOrigins, ok := loggerCfg["allow_origins"].([]any); ok {
-						var origins []string
-						for _, item1 := range allowOrigins {
-							origins = append(origins, item1.(string))
-						}
-						if origins == nil {
-							origins = []string{}
-						}
-						corsConfig.AllowOrigins = origins
-					}
+					c.Next()
+				})
 
-					if allowMethods, ok := loggerCfg["allow_methods"].([]any); ok {
-						var methods []string
-						for _, item1 := range allowMethods {
-							methods = append(methods, item1.(string))
-						}
-						if methods == nil {
-							methods = []string{}
-						}
-						corsConfig.AllowMethods = methods
-					}
-
-					if allowPrivateNetwork, ok := loggerCfg["allow_private_network"].(bool); ok {
-						corsConfig.AllowPrivateNetwork = allowPrivateNetwork
-					}
-
-					if allowHeaders, ok := loggerCfg["allow_headers"].([]any); ok {
-						var headers []string
-						for _, item1 := range allowHeaders {
-							headers = append(headers, item1.(string))
-						}
-						if headers == nil {
-							headers = []string{}
-						}
-
-						corsConfig.AllowHeaders = headers
-					}
-
-					if allowCredentials, ok := loggerCfg["allow_credentials"].(bool); ok {
-						corsConfig.AllowCredentials = allowCredentials
-					}
-
-					if exposeHeaders, ok := loggerCfg["expose_headers"].([]any); ok {
-						var headers []string
-						for _, item1 := range exposeHeaders {
-							headers = append(headers, item1.(string))
-						}
-						if headers == nil {
-							headers = []string{}
-						}
-
-						corsConfig.ExposeHeaders = headers
-					}
-
-					if maxAge, ok := loggerCfg["max_age"].(int); ok {
-						corsConfig.MaxAge = time.Second * time.Duration(maxAge)
-					}
-
-					if allowWildcard, ok := loggerCfg["allow_wildcard"].(bool); ok {
-						corsConfig.AllowWildcard = allowWildcard
-					}
-
-					if allowBrowserExtension, ok := loggerCfg["allow_browser_extension"].(bool); ok {
-						corsConfig.AllowBrowserExtensions = allowBrowserExtension
-					}
-
-					if customSchemes, ok := loggerCfg["custom_schemes"].([]any); ok {
-						var schemes []string
-						for _, item1 := range customSchemes {
-							schemes = append(schemes, item1.(string))
-						}
-						if schemes == nil {
-							schemes = []string{}
-						}
-						corsConfig.CustomSchemas = schemes
-					}
-
-					if allowWebSockets, ok := loggerCfg["allow_websockets"].(bool); ok {
-						corsConfig.AllowWebSockets = allowWebSockets
-					}
-
-					if allowFiles, ok := loggerCfg["allow_files"].(bool); ok {
-						corsConfig.AllowFiles = allowFiles
-					}
-
-					if optionResponseStatusCode, ok := loggerCfg["option_response_status_code"].(int); ok {
-						corsConfig.OptionsResponseStatusCode = optionResponseStatusCode
-					}
-				}
-
-				s.baseRouter.Use(cors.New(corsConfig))
-				//s.baseRouter.Use(func(c *gin.Context) {
-				//	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-				//	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-				//	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-				//	c.Writer.Header().Set("Access-Control-Allow-Methods", strings.Join(s.defaultRequestMethods, ","))
-				//
-				//	if c.Request.Method == "OPTIONS" {
-				//		c.AbortWithStatus(204)
-				//		return
-				//	}
-				//
-				//	c.Next()
-				//})
 			}
 		}
 	}
