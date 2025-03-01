@@ -1,5 +1,5 @@
 /*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -11,7 +11,7 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/abolfazlbeh/zhycan/pkg/cli"
+	"github.com/Blocktunium/gonyx/pkg/cli"
 	"os"
 	"{{.ProjectName}}/app"
 )
@@ -58,7 +58,7 @@ func init() {
 
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-    // Attach Default Zhycan Cli Commands
+    // Attach Default Gonyx Cli Commands
     cli.AttachCommands(rootCmd)
 
 	// MARK:Commands --- And New Commands Below ---

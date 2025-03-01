@@ -4,16 +4,16 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
-	"github.com/abolfazlbeh/zhycan/internal/utils"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/utils"
 	"gorm.io/gorm"
 	"log"
 	"os"
 	"sync"
 	"time"
 
-	"github.com/abolfazlbeh/zhycan/internal/logger/helpers"
+	"github.com/Blocktunium/gonyx/internal/logger/helpers"
 )
 
 type OutputOption struct {
@@ -118,7 +118,7 @@ func (l *LogMeWrapper) Constructor(name string) error {
 										if r.sqlDbInstance != nil {
 											err := r.sqlDbInstance.AutoMigrate(&types.ZhycanLog{})
 											if err != nil {
-												log.Printf("Cannot migrate the `ZhycanLog` table")
+												log.Printf("Cannot migrate the `GonyxLog` table")
 											}
 										}
 									}

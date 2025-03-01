@@ -2,8 +2,8 @@ package logger
 
 import (
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
 	"io"
 	"os"
 	"reflect"
@@ -15,7 +15,7 @@ import (
 func Test_ZhycanConsoleLogger(t *testing.T) {
 	path := "../.."
 	initialMode := "test"
-	prefix := "ZHYCAN"
+	prefix := "Gonyx"
 
 	err := config.CreateManager(path, initialMode, prefix)
 	if err != nil {
@@ -32,12 +32,12 @@ func Test_ZhycanConsoleLogger(t *testing.T) {
 	logg := &LogMeWrapper{}
 	err = logg.Constructor("logger")
 	if err != nil {
-		t.Errorf("Initializing the Zhycan Wrapper, Expected to don't have error, but got %v", err)
+		t.Errorf("Initializing the Gonyx Wrapper, Expected to don't have error, but got %v", err)
 	}
 
 	expectedFlag := true
 	if !logg.IsInitialized() {
-		t.Errorf("Zhycan Wrapper Must Be Initilaized, Expected to get: %v, but got %v", expectedFlag, logg.IsInitialized())
+		t.Errorf("Gonyx Wrapper Must Be Initilaized, Expected to get: %v, but got %v", expectedFlag, logg.IsInitialized())
 	}
 
 	logTime := time.Now().UTC()
@@ -61,7 +61,7 @@ func Test_ZhycanConsoleLogger(t *testing.T) {
 	//out := <-outC
 
 	// Check the output
-	expectedLog := fmt.Sprintf("\\e[37mzhycan %v >>>   DEBUG >>> (FUNC_MAINT/tester)  - tester ... <nil>\\e[0m\n", logTime.UnixNano())
+	expectedLog := fmt.Sprintf("\\e[37mGonyx %v >>>   DEBUG >>> (FUNC_MAINT/tester)  - tester ... <nil>\\e[0m\n", logTime.UnixNano())
 	if !reflect.DeepEqual(out, expectedLog) {
 		t.Errorf("Expected Log must be: %v, but got: %v", expectedLog, out)
 	}

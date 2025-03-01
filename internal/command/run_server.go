@@ -2,9 +2,9 @@ package command
 
 import (
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/cache"
-	"github.com/abolfazlbeh/zhycan/internal/grpc"
-	"github.com/abolfazlbeh/zhycan/internal/http"
+	"github.com/Blocktunium/gonyx/internal/cache"
+	"github.com/Blocktunium/gonyx/internal/grpc"
+	"github.com/Blocktunium/gonyx/internal/http"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	RunServerInitMsg     = `Zhycan > Running Server ...`
-	RunServerShutdownMsg = `Zhycan > Shutting Down Server ...`
+	RunServerInitMsg     = `Gonyx > Running Server ...`
+	RunServerShutdownMsg = `Gonyx > Shutting Down Server ...`
 )
 
 func NewRunServerCmd() *cobra.Command {

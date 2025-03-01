@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/config"
+	"github.com/Blocktunium/gonyx/internal/config"
 	"testing"
 )
 
@@ -32,7 +32,7 @@ func TestServerWrapper_Init(t *testing.T) {
 func makeReadyConfigManager() {
 	path := "../.."
 	initialMode := "test"
-	prefix := "ZHYCAN"
+	prefix := "Gonyx"
 
 	_ = config.CreateManager(path, initialMode, prefix)
 }

@@ -4,9 +4,9 @@ package logger
 import (
 	"errors"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
-	"github.com/abolfazlbeh/zhycan/internal/utils"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"

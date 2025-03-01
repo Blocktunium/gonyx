@@ -109,7 +109,7 @@ func TestManager_ManualLoadConfig(t *testing.T) {
 func createManager() error {
 	path := "../.."
 	initialMode := "test"
-	prefix := "ZHYCAN"
+	prefix := "Gonyx"
 
 	return CreateManager(path, initialMode, prefix)
 }

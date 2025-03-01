@@ -3,9 +3,9 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/http/types"
-	"github.com/abolfazlbeh/zhycan/internal/utils"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/http/types"
+	"github.com/Blocktunium/gonyx/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -59,7 +59,7 @@ func (s *FiberServer) init(name string, serverConfig types.ServerConfig, rawConf
 
 	s.app = fiber.New(fiber.Config{
 		Prefork:        false,
-		ServerHeader:   "Zhycan",
+		ServerHeader:   "Gonyx",
 		AppName:        appName,
 		RequestMethods: requestMethods,
 	})

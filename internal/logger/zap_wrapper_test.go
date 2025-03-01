@@ -3,8 +3,8 @@ package logger
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/abolfazlbeh/zhycan/internal/config"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
 	"os"
 	"testing"
 	"time"
@@ -13,7 +13,7 @@ import (
 func Test_ZapFileLogger(t *testing.T) {
 	path := "../.."
 	initialMode := "test"
-	prefix := "ZHYCAN"
+	prefix := "Gonyx"
 
 	err := config.CreateManager(path, initialMode, prefix)
 	if err != nil {
@@ -25,7 +25,7 @@ func Test_ZapFileLogger(t *testing.T) {
 	logg.Constructor("logger")
 
 	expectedModule := "tester"
-	expectedService := "zhycan"
+	expectedService := "Gonyx"
 	expectedLogType := "FUNC_MAINT"
 	expectedM := "TEST"
 	expectedL := "\\u001b[35mDEBUG\\u001b[0m"
@@ -35,15 +35,15 @@ func Test_ZapFileLogger(t *testing.T) {
 	logg.Sync()
 
 	// read a log file to ensure it writes ok --> for now it must be written to /tmp folder
-	file, err := os.OpenFile("/tmp/zhycan.log", os.O_RDONLY, 0)
+	file, err := os.OpenFile("/tmp/Gonyx.log", os.O_RDONLY, 0)
 	if err != nil {
 		t.Errorf("Opening the logs file in /tmp folder, but got %v", err)
 		return
 	}
 	defer file.Close()
 
-	if file.Name() != "/tmp/zhycan.log" {
-		t.Errorf("Expected the name of the log file be %v, but got %v", "/tmp/zhycan.log", file.Name())
+	if file.Name() != "/tmp/Gonyx.log" {
+		t.Errorf("Expected the name of the log file be %v, but got %v", "/tmp/Gonyx.log", file.Name())
 		return
 	}
 

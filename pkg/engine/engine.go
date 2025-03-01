@@ -1,9 +1,9 @@
 package engine
 
 import (
-	"github.com/abolfazlbeh/zhycan/internal/engine"
-	interalgRPC "github.com/abolfazlbeh/zhycan/internal/grpc"
-	"github.com/abolfazlbeh/zhycan/pkg/http"
+	"github.com/Blocktunium/gonyx/internal/engine"
+	interalgRPC "github.com/Blocktunium/gonyx/internal/grpc"
+	"github.com/Blocktunium/gonyx/pkg/http"
 	"google.golang.org/grpc"
 	"strings"
 )

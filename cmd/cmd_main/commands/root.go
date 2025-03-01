@@ -10,9 +10,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "zhycan",
-	Short: "Zhycan Project V0.1.0",
-	Long:  `Zhycan Platform To Creating Clear Golang-based Platform`,
+	Use:   "Gonyx",
+	Short: "Gonyx Project V0.1.0",
+	Long:  `Gonyx Platform To Creating Clear Golang-based Platform`,
 
 	// Uncomment the following line if your bare application
 	// has an action associated with it:

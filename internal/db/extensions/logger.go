@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"

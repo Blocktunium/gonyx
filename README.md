@@ -1,3 +1,3 @@
-# Zhycan Project
-## Zhycan project is about new framework
+# Gonyx Framework
+## Gonyx project is about new framework
 
