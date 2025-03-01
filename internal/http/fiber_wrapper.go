@@ -59,7 +59,7 @@ func (s *FiberServer) init(name string, serverConfig types.ServerConfig, rawConf
 
 	s.app = fiber.New(fiber.Config{
 		Prefork:        false,
-		ServerHeader:   "Zhycan",
+		ServerHeader:   "Gonyx",
 		AppName:        appName,
 		RequestMethods: requestMethods,
 	})

@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	RunServerInitMsg     = `Zhycan > Running Server ...`
-	RunServerShutdownMsg = `Zhycan > Shutting Down Server ...`
+	RunServerInitMsg     = `Gonyx > Running Server ...`
+	RunServerShutdownMsg = `Gonyx > Shutting Down Server ...`
 )
 
 func NewRunServerCmd() *cobra.Command {

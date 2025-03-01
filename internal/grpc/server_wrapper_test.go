@@ -32,7 +32,7 @@ func TestServerWrapper_Init(t *testing.T) {
 func makeReadyConfigManager() {
 	path := "../.."
 	initialMode := "test"
-	prefix := "ZHYCAN"
+	prefix := "Gonyx"
 
 	_ = config.CreateManager(path, initialMode, prefix)
 }
