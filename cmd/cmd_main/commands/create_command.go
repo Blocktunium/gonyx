@@ -13,12 +13,12 @@ import (
 )
 
 const (
-	InitializeCreateCommandMessage       = `Zhycan > Create A New Command`
-	CannotGetCurrentDirectoryMessage     = `Zhycan > Cannot current working directory ... %v`
-	CannotCreateCommandsDirectoryMessage = `Zhycan > Cannot create commands directory ... %v`
-	CannotCreateCommandFileMessage       = `Zhycan > Cannot create command file: %v ... %v`
-	CannotFillCommandFileMessage         = `Zhycan > Cannot fill command file: %v ... %v`
-	CommandFileCreatedMessage            = `Zhycan > Command file is created: %v`
+	InitializeCreateCommandMessage       = `Gonyx > Create A New Command`
+	CannotGetCurrentDirectoryMessage     = `Gonyx > Cannot current working directory ... %v`
+	CannotCreateCommandsDirectoryMessage = `Gonyx > Cannot create commands directory ... %v`
+	CannotCreateCommandFileMessage       = `Gonyx > Cannot create command file: %v ... %v`
+	CannotFillCommandFileMessage         = `Gonyx > Cannot fill command file: %v ... %v`
+	CommandFileCreatedMessage            = `Gonyx > Command file is created: %v`
 )
 
 const (

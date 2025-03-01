@@ -13,11 +13,11 @@ import (
 )
 
 func main() {
-	fmt.Println("Zhycan Project")
+	fmt.Println("Gonyx Project")
 
-	path := "/Users/abolfazl.beh/Projects/zhycan/"
+	path := "/Users/abolfazl.beh/Projects/Gonyx/"
 	initialMode := "dev"
-	prefix := "ZHYCAN"
+	prefix := "Gonyx"
 
 	err := config.CreateManager(path, initialMode, prefix)
 	if err != nil {

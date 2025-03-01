@@ -95,7 +95,7 @@ func TestManager_TestGetDbFunc(t *testing.T) {
 func makeReadyConfigManager() {
 	path := "../.."
 	initialMode := "test"
-	prefix := "ZHYCAN"
+	prefix := "Gonyx"
 
 	_ = config.CreateManager(path, initialMode, prefix)
 }

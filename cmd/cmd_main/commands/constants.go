@@ -3,55 +3,55 @@ package commands
 const (
 	DefaultProjectDirectory = "."
 
-	InitializeMessage         = `Zhycan > Create project skeleton ...`
-	RootDirectoryIsCreated    = `Zhycan > Project root (%s) is created ...`
-	RootDirectoryIsNotCreated = `Zhycan > Project root (%s) is not created correctly ...%v`
-	GoModuleFileIsCreated     = `Zhycan > Go Module File "go.mod" is created ...`
-	GoModuleFileIsNotCreated  = `Zhycan > Go Module File "go.mod" is not created ... %v`
-	GoModuleIsCreated         = `Zhycan > Go Module "go.mod" is filled ...`
-	GoModuleIsNotCreated      = `Zhycan > Go Module "go.mod" is not filled ... %v`
-	MainGoFileIsCreated       = `Zhycan > Main program File "main.go" is created ...`
-	MainGoFileIsNotCreated    = `Zhycan > Main program File "main.go" is not created ... %v`
-	MainGoIsCreated           = `Zhycan > Main program "main.go" is filled ...`
-	MainGoIsNotCreated        = `Zhycan > Main program "main.go" is not filled ... %v`
-	UserExisted               = "Zhycan > User existed ..."
-	UserNotExisted            = "Zhycan > User not existed ... %v"
-	SubDirectoryIsNotCreated  = `Zhycan > Sub directory "%s" cannot be created ... %v`
-	SubDirectoryIsCreated     = `Zhycan > Sub directory "%s" is created ...`
-	AppControllerIsNotCreated = `Zhycan > App "controller.go" cannot be created ... %v`
-	AppControllerIsCreated    = `Zhycan > App "controller.go" is created ...`
-	AppModelIsNotCreated      = `Zhycan > App "model.go" cannot be created ... %v`
-	AppModelIsCreated         = `Zhycan > App "model.go" is created ...`
-	AppEngineIsNotCreated     = `Zhycan > App "app.go" cannot be created ... %v`
-	AppEngineIsCreated        = `Zhycan > App "app.go" is created ...`
+	InitializeMessage         = `Gonyx > Create project skeleton ...`
+	RootDirectoryIsCreated    = `Gonyx > Project root (%s) is created ...`
+	RootDirectoryIsNotCreated = `Gonyx > Project root (%s) is not created correctly ...%v`
+	GoModuleFileIsCreated     = `Gonyx > Go Module File "go.mod" is created ...`
+	GoModuleFileIsNotCreated  = `Gonyx > Go Module File "go.mod" is not created ... %v`
+	GoModuleIsCreated         = `Gonyx > Go Module "go.mod" is filled ...`
+	GoModuleIsNotCreated      = `Gonyx > Go Module "go.mod" is not filled ... %v`
+	MainGoFileIsCreated       = `Gonyx > Main program File "main.go" is created ...`
+	MainGoFileIsNotCreated    = `Gonyx > Main program File "main.go" is not created ... %v`
+	MainGoIsCreated           = `Gonyx > Main program "main.go" is filled ...`
+	MainGoIsNotCreated        = `Gonyx > Main program "main.go" is not filled ... %v`
+	UserExisted               = "Gonyx > User existed ..."
+	UserNotExisted            = "Gonyx > User not existed ... %v"
+	SubDirectoryIsNotCreated  = `Gonyx > Sub directory "%s" cannot be created ... %v`
+	SubDirectoryIsCreated     = `Gonyx > Sub directory "%s" is created ...`
+	AppControllerIsNotCreated = `Gonyx > App "controller.go" cannot be created ... %v`
+	AppControllerIsCreated    = `Gonyx > App "controller.go" is created ...`
+	AppModelIsNotCreated      = `Gonyx > App "model.go" cannot be created ... %v`
+	AppModelIsCreated         = `Gonyx > App "model.go" is created ...`
+	AppEngineIsNotCreated     = `Gonyx > App "app.go" cannot be created ... %v`
+	AppEngineIsCreated        = `Gonyx > App "app.go" is created ...`
 
-	RootCommandGoFileIsCreated    = `Zhycan > Root command File "commands/root.go" is created ...`
-	RootCommandGoFileIsNotCreated = `Zhycan > Root command File "commands/root.go" is not created ... %v`
-	RootCommandGoIsNotCreated     = `Zhycan > Root command "commands/root.go" is not filled ... %v`
+	RootCommandGoFileIsCreated    = `Gonyx > Root command File "commands/root.go" is created ...`
+	RootCommandGoFileIsNotCreated = `Gonyx > Root command File "commands/root.go" is not created ... %v`
+	RootCommandGoIsNotCreated     = `Gonyx > Root command "commands/root.go" is not filled ... %v`
 
-	GitIgnoreFileIsCreated    = `Zhycan > Git Ignore File ".gitignore" is created ...`
-	GitIgnoreFileIsNotCreated = `Zhycan > Git Ignore File ".gitignore" is not created ... %v`
-	GitIgnoreIsNotCreated     = `Zhycan > Git Ignore ".gitignore" is not filled ... %v`
+	GitIgnoreFileIsCreated    = `Gonyx > Git Ignore File ".gitignore" is created ...`
+	GitIgnoreFileIsNotCreated = `Gonyx > Git Ignore File ".gitignore" is not created ... %v`
+	GitIgnoreIsNotCreated     = `Gonyx > Git Ignore ".gitignore" is not filled ... %v`
 
-	GitInitExecutedError = `Zhycan > Cannot execute git init command ... %v`
-	GitInitExecuted      = `Zhycan > Git repository is initialized ...`
+	GitInitExecutedError = `Gonyx > Cannot execute git init command ... %v`
+	GitInitExecuted      = `Gonyx > Git repository is initialized ...`
 
-	ConfigFileIsCreated       = `Zhycan > Config File "%s" is created ...`
-	ConfigFileIsNotCreated    = `Zhycan > Config File "%s" is not created ... %v`
-	ConfigDevFileIsCreated    = `Zhycan > Config File "%s" is created for "dev" mode ...`
-	ConfigDevFileIsNotCreated = `Zhycan > Config File "%s" is not created for "dev" mode ... %v`
+	ConfigFileIsCreated       = `Gonyx > Config File "%s" is created ...`
+	ConfigFileIsNotCreated    = `Gonyx > Config File "%s" is not created ... %v`
+	ConfigDevFileIsCreated    = `Gonyx > Config File "%s" is created for "dev" mode ...`
+	ConfigDevFileIsNotCreated = `Gonyx > Config File "%s" is not created for "dev" mode ... %v`
 
-	GoModTidyExecutedError = `Zhycan > Cannot execute go mod tidy command ... %v`
-	GoModTidyExecuted      = `Zhycan > "go mod tidy" command is executed ...`
+	GoModTidyExecutedError = `Gonyx > Cannot execute go mod tidy command ... %v`
+	GoModTidyExecuted      = `Gonyx > "go mod tidy" command is executed ...`
 
-	GreeterProtobufIsNotCreated = `Zhycan > App "greeter.proto" cannot be created ... %v`
-	GreeterProtobufIsCreated    = `Zhycan > App "greeter.proto" is created ...`
+	GreeterProtobufIsNotCreated = `Gonyx > App "greeter.proto" cannot be created ... %v`
+	GreeterProtobufIsCreated    = `Gonyx > App "greeter.proto" is created ...`
 
-	GreeterCompiledProtobufIsNotCreated = `Zhycan > App "greeter.pb.go" cannot be created ... %v`
-	GreeterCompiledProtobufIsCreated    = `Zhycan > App "greeter.pb.go" is created ...`
+	GreeterCompiledProtobufIsNotCreated = `Gonyx > App "greeter.pb.go" cannot be created ... %v`
+	GreeterCompiledProtobufIsCreated    = `Gonyx > App "greeter.pb.go" is created ...`
 
-	GreeterCompiledGrpcProtobufIsNotCreated = `Zhycan > App "greeter_grpc.pb.go" cannot be created ... %v`
-	GreeterCompiledGrpcProtobufIsCreated    = `Zhycan > App "greeter_grpc.pb.go" is created ...`
+	GreeterCompiledGrpcProtobufIsNotCreated = `Gonyx > App "greeter_grpc.pb.go" cannot be created ... %v`
+	GreeterCompiledGrpcProtobufIsCreated    = `Gonyx > App "greeter_grpc.pb.go" is created ...`
 )
 
 const (
@@ -62,7 +62,7 @@ go {{.Version}}
 `
 
 	mainTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -106,7 +106,7 @@ func main() {
 `
 
 	rootCommandTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -160,7 +160,7 @@ func init() {
 
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-    // Attach Default Zhycan Cli Commands
+    // Attach Default Gonyx Cli Commands
     cli.AttachCommands(rootCmd)
 
 	// MARK:Commands --- And New Commands Below ---
@@ -168,7 +168,7 @@ func init() {
 }
 `
 
-	gitIgnoreTmpl = `# Create By Zhycan Framework
+	gitIgnoreTmpl = `# Create By Gonyx Framework
 #
 # Copyright © {{.Year}}
 # Project: {{.ProjectName}}
@@ -382,7 +382,7 @@ DerivedData/
 }`
 
 	appControllerTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -448,7 +448,7 @@ func (ctrl *SampleProtoController) SayHello(ctx context.Context, rq *greeter.Hel
 `
 
 	appEngineTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -481,7 +481,7 @@ func (app *App) Init() {
 `
 
 	appModelTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -541,7 +541,7 @@ func GetAllUsers() (*[]User, int64, error) {
 `
 
 	greeterProtobufTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -571,7 +571,7 @@ message HelloResponse {
 `
 
 	greeterProtobufPbTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}
@@ -797,7 +797,7 @@ func file_greeter_proto_init() {
 `
 
 	greeterProtobufGrpcPbTmpl = `/*
-Create By Zhycan Framework
+Create By Gonyx Framework
 
 Copyright © {{.Year}}
 Project: {{.ProjectName}}

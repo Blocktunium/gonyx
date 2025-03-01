@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"github.com/abolfazlbeh/zhycan/internal/config"
+	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	RunCompileCommandInitMsg      = `Zhycan > Compiling the protobuf file ...`
-	RunCompileCommandFileName     = `Zhycan > "%s.proto" file is going to be compiled ...`
-	RunCompileCommandError        = `Zhycan > Compiling encountered the error: %s`
-	RunCompileCommandFileNotExist = `Zhycan > %s.proto file does not exist in "%s"`
+	RunCompileCommandInitMsg      = `Gonyx > Compiling the protobuf file ...`
+	RunCompileCommandFileName     = `Gonyx > "%s.proto" file is going to be compiled ...`
+	RunCompileCommandError        = `Gonyx > Compiling encountered the error: %s`
+	RunCompileCommandFileNotExist = `Gonyx > %s.proto file does not exist in "%s"`
 )
 
 func NewCompileCommandCmd() *cobra.Command {

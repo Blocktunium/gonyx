@@ -118,7 +118,7 @@ func (l *LogMeWrapper) Constructor(name string) error {
 										if r.sqlDbInstance != nil {
 											err := r.sqlDbInstance.AutoMigrate(&types.ZhycanLog{})
 											if err != nil {
-												log.Printf("Cannot migrate the `ZhycanLog` table")
+												log.Printf("Cannot migrate the `GonyxLog` table")
 											}
 										}
 									}
