@@ -2,8 +2,11 @@
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Blocktunium/gonyx)](https://github.com/Blocktunium/gonyx/releases/latest)
 [![License](https://img.shields.io/github/license/Blocktunium/gonyx)](LICENSE)
+[![Website](https://img.shields.io/badge/website-gonyx.io-blue)](https://gonyx.io)
 
 Gonyx is a modern, high-performance framework designed to streamline application development with a focus on simplicity and efficiency. It provides a robust foundation for building scalable applications with built-in support for modern development practices.
+
+Visit our official website at [https://gonyx.io](https://gonyx.io) for more information.
 
 ## Prerequisites
 
@@ -17,9 +20,11 @@ go version
 
 ## Quick Start
 
-### Download Binaries
+### Download and Installation
 
-Download the latest version for your platform:
+Visit our download page at [https://gonyx.io/download](https://gonyx.io/download) for the latest versions and installation instructions.
+
+Alternatively, you can download the binaries directly for your platform:
 
 - [Linux (x64)](https://github.com/Blocktunium/gonyx/releases/download/v0.2.0/gonyx_linux_amd64.zip)
 - [Linux (arm64)](https://github.com/Blocktunium/gonyx/releases/download/v0.2.0/gonyx_linux_arm64.zip)
@@ -50,7 +55,7 @@ gonyx.exe init hello_world --path .
 
 ## Documentation
 
-**Coming Soon...**
+Comprehensive documentation is available at [https://gonyx.io/docs/0.2.0/intro](https://gonyx.io/docs/0.2.0/intro).
 
 ## Contributing
 
