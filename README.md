@@ -53,6 +53,13 @@ gonyx.exe init hello_world --path .
 - Modern development workflow
 - Extensible plugin system
 
+## Contrib Packages
+
+The following contributed packages extend Gonyx's functionality:
+
+- **gormkit**: A wrapper around GORM package to handle rational databases (sqlite, mysql, postgresql)
+- **mongokit**: A wrapper around the MongoDB driver package
+
 ## Documentation
 
 Comprehensive documentation is available at [https://gonyx.io/docs/0.2.0/intro](https://gonyx.io/docs/0.2.0/intro).
