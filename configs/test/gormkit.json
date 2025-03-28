@@ -1,0 +1,53 @@
+{
+  "connections": ["server2"],
+  "server1": {
+    "type": "sqlite",
+    "db": "file.db",
+    "options": {
+      "mode": "memory",
+      "cache": "shared",
+      "_fk": "1"
+    },
+    "config": {
+      "skip_default_transaction": false,
+      "dry_run": false,
+      "prepare_stmt": true,
+      "disable_automatic_ping": false,
+      "disable_foreign_key_constraint_when_migrating": false,
+      "ignore_relationships_when_migrating": false,
+      "disable_nested_transaction": false
+    },
+    "logger": {
+      "slow_threshold": 1000,
+      "ignore_record_not_found_error": false,
+      "parameterized_queries": false,
+      "log_level": "debug"
+    }
+  },
+  "server2": {
+    "type": "mysql",
+    "db": "databasename",
+    "username": "username",
+    "password": "password",
+    "host": "127.0.0.1",
+    "port": "3306",
+    "protocol": "tcp",
+    "options": {
+      "charset": "utf8mb4",
+      "parseTime": "True",
+      "loc": "Local"
+    }
+  },
+  "server3": {
+    "type": "postgresql",
+    "db": "databasename",
+    "username": "username",
+    "password": "password",
+    "host": "127.0.0.1",
+    "port": "3306",
+    "options": {
+      "sslmode": "disable",
+      "TimeZone": "Asia/Shanghai"
+    }
+  }
+}

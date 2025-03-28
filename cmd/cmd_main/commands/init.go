@@ -196,10 +196,10 @@ func createAppDirFiles(cmd *cobra.Command, expectedProjectPath string, projectNa
 		return err
 	}
 
-	err = createAppModel(cmd, expectedProjectPath, projectName, username, year)
-	if err != nil {
-		return err
-	}
+	// err = createAppModel(cmd, expectedProjectPath, projectName, username, year)
+	// if err != nil {
+	// 	return err
+	// }
 
 	pathToCreate := filepath.Join(expectedProjectPath, "app", "proto")
 
