@@ -43,7 +43,7 @@ func (m *manager) init() {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 
-	m.supportedDBs = []string{"sqlite", "mysql", "postgresql", "mongodb"}
+	m.supportedDBs = []string{"sqlite", "mysql", "postgresql"}
 
 	// read configs
 	connectionsObj, err := config.GetManager().Get(m.name, "connections")
