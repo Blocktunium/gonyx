@@ -60,7 +60,7 @@ const (
 go {{.Version}}
 
 require (
-	github.com/Blocktunium/gonyx v0.2.2
+	github.com/Blocktunium/gonyx v0.2.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/spf13/cobra v1.9.1
 	google.golang.org/grpc v1.70.0
