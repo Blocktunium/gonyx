@@ -26,11 +26,11 @@ Visit our download page at [https://gonyx.io/download](https://gonyx.io/download
 
 Alternatively, you can download the binaries directly for your platform:
 
-- [Linux (x64)](https://github.com/Blocktunium/gonyx/releases/download/v0.2.0/gonyx_linux_amd64.zip)
-- [Linux (arm64)](https://github.com/Blocktunium/gonyx/releases/download/v0.2.0/gonyx_linux_arm64.zip)
-- [macOS (x64)](https://github.com/Blocktunium/gonyx/releases/download/v0.2.0/gonyx_macos_amd64.zip)
-- [macOS (arm64)](https://github.com/Blocktunium/gonyx/releases/download/v0.2.0/gonyx_macos_arm64.zip)
-- [Windows (x64)](https://github.com/Blocktunium/gonyx/releases/download/v0.2.0/gonyx_windows_amd64.zip)
+- [Linux (x64)](https://github.com/Blocktunium/gonyx/releases/download/v0.3.0/gonyx_linux_amd64.zip)
+- [Linux (arm64)](https://github.com/Blocktunium/gonyx/releases/download/v0.3.0/gonyx_linux_arm64.zip)
+- [macOS (x64)](https://github.com/Blocktunium/gonyx/releases/download/v0.3.0/gonyx_macos_amd64.zip)
+- [macOS (arm64)](https://github.com/Blocktunium/gonyx/releases/download/v0.3.0/gonyx_macos_arm64.zip)
+- [Windows (x64)](https://github.com/Blocktunium/gonyx/releases/download/v0.3.0/gonyx_windows_amd64.zip)
 
 After downloading, extract the archive and use the binary inside to create new projects:
 
@@ -53,9 +53,16 @@ gonyx.exe init hello_world --path .
 - Modern development workflow
 - Extensible plugin system
 
+## Contrib Packages
+
+The following contributed packages extend Gonyx's functionality:
+
+- **gormkit**: A wrapper around GORM package to handle rational databases (sqlite, mysql, postgresql)
+- **mongokit**: A wrapper around the MongoDB driver package
+
 ## Documentation
 
-Comprehensive documentation is available at [https://gonyx.io/docs/0.2.0/intro](https://gonyx.io/docs/0.2.0/intro).
+Comprehensive documentation is available at [https://gonyx.io/docs/0.3.0/intro](https://gonyx.io/docs/0.3.0/intro).
 
 ## Contributing
 

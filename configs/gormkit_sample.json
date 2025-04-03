@@ -65,23 +65,5 @@
       "prefer_simple_protocol": true,
       "without_returning": false
     }
-  },
-  "server4": {
-    "type": "mongodb",
-    "db": "",
-    "username": "username",
-    "password": "password",
-    "host": "127.0.0.1",
-    "port": "27017",
-    "options": {
-      "maxPoolSize": "100",
-      "w": "majority",
-      "connectTimeoutMS": "30000"
-    },
-    "logger": {
-      "component_command": "debug",
-      "component_connection": "info",
-      "max_document_length": 1000
-    }
   }
 }

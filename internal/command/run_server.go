@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -25,6 +26,10 @@ func NewRunServerCmd() *cobra.Command {
 		Run:  runServerCmdExecute,
 		RunE: runServerCmdExecuteE,
 	}
+
+	// Add server-type flag with short name
+	runServerCmd.Flags().StringP("server-type", "s", "", "Type of server to run (http, grpc)")
+
 	return runServerCmd
 }
 
@@ -34,12 +39,21 @@ func runServerCmdExecuteE(cmd *cobra.Command, args []string) error {
 }
 
 func runServerCmdExecute(cmd *cobra.Command, args []string) {
-	// TODO: in future 'args' must be considered
 	fmt.Fprintf(cmd.OutOrStdout(), RunServerInitMsg)
 	m := cache.GetManager()
 
-	http.GetManager().StartServers()
-	grpc.GetManager().StartServers()
+	// Get the server-type flag value
+	serverType, _ := cmd.Flags().GetString("server-type")
+	serverType = strings.ToLower(serverType)
+
+	// Start the appropriate servers based on the flag value
+	if serverType == "" || serverType == "http" {
+		http.GetManager().StartServers()
+	}
+
+	if serverType == "" || serverType == "grpc" {
+		grpc.GetManager().StartServers()
+	}
 
 	quit := make(chan os.Signal)
 	// kill (no param) default send syscall.SIGTERM
@@ -50,8 +64,15 @@ func runServerCmdExecute(cmd *cobra.Command, args []string) {
 
 	fmt.Fprintf(cmd.OutOrStdout(), RunServerShutdownMsg)
 
-	http.GetManager().StopServers()
-	grpc.GetManager().StopServers()
+	// Stop only the servers that were started
+	if serverType == "" || serverType == "http" {
+		http.GetManager().StopServers()
+	}
+
+	if serverType == "" || serverType == "grpc" {
+		grpc.GetManager().StopServers()
+	}
+
 	err := m.Release()
 	if err != nil {
 		fmt.Fprintf(cmd.OutOrStdout(), err.Error())

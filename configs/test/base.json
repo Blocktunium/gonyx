@@ -6,7 +6,7 @@
   "config_remote_duration": 300,
   "modules": [
     {"name":"logger", "type": "local"},
-    {"name":"db", "type": "local"},
+    {"name":"gormkit", "type": "local"},
     {"name":"http", "type": "local"}
   ]
 }

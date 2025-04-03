@@ -1,5 +1,5 @@
 {
-  "connections": ["server4"],
+  "connections": ["server2"],
   "server1": {
     "type": "sqlite",
     "db": "file.db",
@@ -48,19 +48,6 @@
     "options": {
       "sslmode": "disable",
       "TimeZone": "Asia/Shanghai"
-    }
-  },
-  "server4": {
-    "type": "mongodb",
-    "db": "m",
-    "username": "u1",
-    "password": "p1",
-    "host": "127.0.0.1",
-    "port": "27017",
-    "options": {
-      "maxPoolSize": "100",
-      "w": "majority",
-      "connectTimeoutMS": "30000"
     }
   }
 }
