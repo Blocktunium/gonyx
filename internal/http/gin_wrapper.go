@@ -7,11 +7,14 @@ import (
 	"fmt"
 	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/Blocktunium/gonyx/internal/http/middlewares"
+	"github.com/Blocktunium/gonyx/internal/http/swagger"
 	"github.com/Blocktunium/gonyx/internal/http/types"
 	"github.com/Blocktunium/gonyx/internal/logger"
 	logTypes "github.com/Blocktunium/gonyx/internal/logger/types"
 	"github.com/Blocktunium/gonyx/internal/utils"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"strings"
@@ -67,6 +70,15 @@ func (s *GinServer) init(name string, serverConfig types.GinServerConfig, rawCon
 		}
 	}
 
+	// Set Gin mode based on environment
+	ginMode := gin.ReleaseMode
+	if env, err := config.GetManager().Get("app", "env"); err == nil {
+		if env == "dev" {
+			ginMode = gin.DebugMode
+		}
+	}
+	gin.SetMode(ginMode)
+
 	s.baseRouter = gin.New()
 
 	s.groups = make(map[string]*gin.RouterGroup)
@@ -98,6 +110,11 @@ func (s *GinServer) init(name string, serverConfig types.GinServerConfig, rawCon
 				s.AddRoute(item.method, item.path, item.f[0], item.routeName, item.versions, item.groups)
 			}
 		}
+	}
+
+	// Add Swagger documentation if enabled
+	if s.config.Swagger.Enabled {
+		s.addSwagger()
 	}
 
 	return nil
@@ -161,7 +178,7 @@ func (s *GinServer) attachMiddlewares(orders []string, rawConfig map[string]inte
 }
 
 func (s *GinServer) setupStatic() {
-
+	// Add static file serving functionality here if needed
 }
 
 func (s *GinServer) addGroup(keyName string, groupName string, router *gin.RouterGroup, f gin.HandlerFunc) {
@@ -172,10 +189,36 @@ func (s *GinServer) addGroup(keyName string, groupName string, router *gin.Route
 	}
 }
 
-//func (s *GinServer) addSwagger() {
-//	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json")
-//	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-//}
+// addSwagger adds Swagger documentation endpoints to the server
+func (s *GinServer) addSwagger() {
+	// Parse host and port from the listen address
+	host := "localhost"
+	port := "8080"
+
+	// Get host and port from listen address
+	if s.config.ListenAddress != "" {
+		parts := strings.Split(s.config.ListenAddress, ":")
+		if len(parts) > 1 {
+			// If address is like "localhost:8080" or "127.0.0.1:8080"
+			host = parts[0]
+			port = parts[1]
+		} else if len(parts) == 1 {
+			// If address is just a port like ":8080"
+			port = parts[0]
+		}
+	}
+
+	// Create handler for generating Swagger JSON on the fly
+	s.baseRouter.GET("/swagger/doc.json", func(c *gin.Context) {
+		// Generate the OpenAPI specification dynamically from the routes
+		swaggerJSON := s.generateSwaggerJSON(host, port)
+		c.Header("Content-Type", "application/json")
+		c.JSON(http.StatusOK, swaggerJSON)
+	})
+
+	// Register Swagger UI handler
+	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+}
 
 // MARK: Public functions
 
@@ -352,6 +395,43 @@ func (s *GinServer) AddRoute(method string, path string, f func(c *gin.Context),
 	}
 
 	return NewNotSupportedHttpMethodErr(method)
+}
+
+// swaggerGenerator is a singleton instance of the Swagger generator
+var swaggerGenerator *swagger.Generator
+
+// getSwaggerGenerator initializes or returns the Swagger generator
+func getSwaggerGenerator() *swagger.Generator {
+	if swaggerGenerator == nil {
+		swaggerGenerator = swagger.NewGenerator()
+	}
+	return swaggerGenerator
+}
+
+// generateSwaggerJSON generates OpenAPI/Swagger JSON dynamically based on registered routes
+func (s *GinServer) generateSwaggerJSON(host, port string) map[string]interface{} {
+	// Get all registered routes
+	routes := s.GetAllRoutes()
+
+	// Get app info from config
+	appName := "Gonyx API"
+	appVersion := "1.0.0"
+
+	// Try to get app info from config
+	if appNameCfg, err := config.GetManager().Get("base", "name"); err == nil && appNameCfg != nil {
+		if name, ok := appNameCfg.(string); ok && name != "" {
+			appName = name
+		}
+	}
+
+	if appVersionCfg, err := config.GetManager().Get("base", "version"); err == nil && appVersionCfg != nil {
+		if version, ok := appVersionCfg.(string); ok && version != "" {
+			appVersion = version
+		}
+	}
+
+	// Generate OpenAPI specification using our Swagger generator
+	return getSwaggerGenerator().GenerateAPI(routes, appName, appVersion, host, port)
 }
 
 // AddRouteWithMultiHandlers - add a route to the server

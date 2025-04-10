@@ -1,0 +1,48 @@
+# Gonyx Framework Windsurf Rules
+
+# Framework specification
+framework = go
+go_version = 1.23
+
+# Build configuration
+build_command = go build -o build/ ./cmd/cmd_main
+install_command = go mod download
+
+# Frameworks and libraries
+libraries = [
+  # Web frameworks
+  "github.com/gin-gonic/gin",
+  "github.com/gofiber/fiber/v2",
+  
+  # CLI tools
+  "github.com/spf13/cobra",
+  "github.com/spf13/viper",
+  
+  # Database connectors
+  "gorm.io/gorm",
+  "gorm.io/driver/mysql",
+  "gorm.io/driver/postgres",
+  "gorm.io/driver/sqlite",
+  "go.mongodb.org/mongo-driver",
+  
+  # Caching
+  "github.com/redis/go-redis/v9",
+  
+  # gRPC
+  "google.golang.org/grpc",
+  
+  # Logging
+  "go.uber.org/zap",
+  "github.com/gin-contrib/zap",
+  
+  # File system monitoring
+  "github.com/fsnotify/fsnotify",
+  "github.com/radovskyb/watcher",
+  
+  # Testing
+  "github.com/stretchr/testify"
+  # Swagger documentation
+  "github.com/swaggo/swag",
+  "github.com/swaggo/gin-swagger",
+  "github.com/swaggo/files"
+]

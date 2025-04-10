@@ -299,6 +299,7 @@ DerivedData/
 
 	baseConfigTmpl = `{
   "name": "{{.ProjectName}}",
+  "version": "1.0.0",
   "config_must_watched": true,
   "config_remote_addr": "0.0.0.0:7777",
   "config_remote_infra": "grpc",
@@ -370,6 +371,9 @@ DerivedData/
             "allow_files": false,
             "option_response_status_code": 204
         }
+      },
+      "swagger": {
+        "enabled": false
       }
     }
   ]
