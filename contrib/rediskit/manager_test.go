@@ -1,11 +1,9 @@
 package rediskit
 
 import (
-	"context"
 	"errors"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/stretchr/testify/assert"
@@ -41,60 +39,60 @@ func (m *MockConfigWrapper) RegisterChangeCallback(callback func() interface{}) 
 	m.Called(callback)
 }
 
-// MockRedisClient is a mock implementation of the Redis client
-type MockRedisClient struct {
-	mock.Mock
-}
-
-func (m *MockRedisClient) Init(name, configPrefix, keyPrefix string) error {
-	args := m.Called(name, configPrefix, keyPrefix)
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) Ping(ctx context.Context) error {
-	args := m.Called(ctx)
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) IsInitialized() bool {
-	args := m.Called()
-	return args.Bool(0)
-}
-
-func (m *MockRedisClient) Close() error {
-	args := m.Called()
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) Get(ctx context.Context, key string, val any) error {
-	args := m.Called(ctx, key, val)
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) Set(ctx context.Context, key string, val any, expiration time.Duration) error {
-	args := m.Called(ctx, key, val, expiration)
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) SetStruct(ctx context.Context, key string, val any, expiration time.Duration) error {
-	args := m.Called(ctx, key, val, expiration)
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) GetStruct(ctx context.Context, key string, val any) error {
-	args := m.Called(ctx, key, val)
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) HSet(ctx context.Context, key string, expiration time.Duration, val ...any) error {
-	args := m.Called(ctx, key, expiration, val)
-	return args.Error(0)
-}
-
-func (m *MockRedisClient) HGet(ctx context.Context, key, field string, val any) error {
-	args := m.Called(ctx, key, field, val)
-	return args.Error(0)
-}
+//// MockRedisClient is a mock implementation of the Redis client
+//type MockRedisClient struct {
+//	mock.Mock
+//}
+//
+//func (m *MockRedisClient) Init(name, configPrefix, keyPrefix string) error {
+//	args := m.Called(name, configPrefix, keyPrefix)
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) Ping(ctx context.Context) error {
+//	args := m.Called(ctx)
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) IsInitialized() bool {
+//	args := m.Called()
+//	return args.Bool(0)
+//}
+//
+//func (m *MockRedisClient) Close() error {
+//	args := m.Called()
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) Get(ctx context.Context, key string, val any) error {
+//	args := m.Called(ctx, key, val)
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) Set(ctx context.Context, key string, val any, expiration time.Duration) error {
+//	args := m.Called(ctx, key, val, expiration)
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) SetStruct(ctx context.Context, key string, val any, expiration time.Duration) error {
+//	args := m.Called(ctx, key, val, expiration)
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) GetStruct(ctx context.Context, key string, val any) error {
+//	args := m.Called(ctx, key, val)
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) HSet(ctx context.Context, key string, expiration time.Duration, val ...any) error {
+//	args := m.Called(ctx, key, expiration, val)
+//	return args.Error(0)
+//}
+//
+//func (m *MockRedisClient) HGet(ctx context.Context, key, field string, val any) error {
+//	args := m.Called(ctx, key, field, val)
+//	return args.Error(0)
+//}
 
 // Replace the real config manager with our mock for testing
 func setupMockConfig() (*MockConfig, *MockConfigWrapper) {
