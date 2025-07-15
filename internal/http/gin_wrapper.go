@@ -5,6 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/Blocktunium/gonyx/internal/http/middlewares"
 	"github.com/Blocktunium/gonyx/internal/http/swagger"
@@ -15,10 +20,6 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"log"
-	"net/http"
-	"strings"
-	"time"
 )
 
 // MARK: Variables
@@ -208,16 +209,16 @@ func (s *GinServer) addSwagger() {
 		}
 	}
 
-	// Create handler for generating Swagger JSON on the fly
+	// Register Swagger UI handler first (catch-all route)
+	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// Then register the specific route for Swagger JSON
 	s.baseRouter.GET("/swagger/doc.json", func(c *gin.Context) {
 		// Generate the OpenAPI specification dynamically from the routes
 		swaggerJSON := s.generateSwaggerJSON(host, port)
 		c.Header("Content-Type", "application/json")
 		c.JSON(http.StatusOK, swaggerJSON)
 	})
-
-	// Register Swagger UI handler
-	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 // MARK: Public functions
