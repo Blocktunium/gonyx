@@ -111,11 +111,21 @@ func (m *MongoWrapper) makeUri() string {
 	}
 	optionsQS := strings.Join(optionsQSArr, "&")
 
-	return fmt.Sprintf("mongodb://%s:%s@%s:%s/?%s",
+	if m.config.Username == "" || m.config.Password == "" {
+		return fmt.Sprintf("mongodb://%s:%s/%s?%s",
+			m.config.Host,
+			m.config.Port,
+			m.config.DatabaseName,
+			optionsQS)
+
+	}
+
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?%s",
 		m.config.Username,
 		m.config.Password,
 		m.config.Host,
 		m.config.Port,
+		m.config.DatabaseName,
 		optionsQS)
 }
 
