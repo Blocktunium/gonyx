@@ -11,6 +11,6 @@
     {"name":"mongokit", "type": "local"},
     {"name":"server", "type": "remote"},
     {"name":"http", "type": "local"},
-    {"name":"cache", "type": "local"}
+    {"name":"rediskit", "type": "local"}
   ]
 }

@@ -116,21 +116,19 @@ if err != nil {
 
 ## Configuration
 
-RedisKit requires the following configuration structure when using the Manager:
+RedisKit requires the following configuration structure when using the Manager. The configuration should be placed in a file named `rediskit.json`:
 
 ```json
 {
   "connections": ["localhost", "computeServer"],
   "localhost": {
-    "type": "redis",
-    "redis_type": "client",
+    "type": "client",
     "add_service_prefix": false,
     "client": {
-      "enable_lock": true,
-      "address": "127.0.0.1:6579",
+      "address": "localhost:6379",
       "password": "",
       "db": 0,
-      "max_retries": 0,
+      "max_retries": 3,
       "min_retry_backoff": 8,
       "max_retry_backoff": 512,
       "dial_timeout": 5000,
@@ -142,19 +140,18 @@ RedisKit requires the following configuration structure when using the Manager:
       "pool_timeout": 4000,
       "idle_timeout": 5000,
       "idle_check_frequency": 1000,
-      "on_connect_log": true
+      "on_connect_log": true,
+      "enable_lock": false
     }
   },
   "computeServer": {
-    "type": "redis",
-    "redis_type": "client",
-    "add_service_prefix": false,
+    "type": "client",
+    "add_service_prefix": true,
     "client": {
-      "enable_lock": true,
       "address": "127.0.0.1:6379",
       "password": "",
-      "db": 0,
-      "max_retries": 0,
+      "db": 1,
+      "max_retries": 3,
       "min_retry_backoff": 8,
       "max_retry_backoff": 512,
       "dial_timeout": 5000,
@@ -166,7 +163,8 @@ RedisKit requires the following configuration structure when using the Manager:
       "pool_timeout": 4000,
       "idle_timeout": 5000,
       "idle_check_frequency": 1000,
-      "on_connect_log": true
+      "on_connect_log": true,
+      "enable_lock": false
     }
   }
 }
