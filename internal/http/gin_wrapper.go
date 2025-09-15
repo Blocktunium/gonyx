@@ -270,19 +270,10 @@ func (s *GinServer) generateSwaggerJSON() error {
 	swaggoGen.SetHostAndPort(host, port)
 
 	// First try to generate from swag registry (if annotations exist)
-	swaggerJSONBytes, err := swaggoGen.GenerateSwaggerDocs()
+	routes := s.baseRouter.Routes()
+	swaggerJSONBytes, err := swaggoGen.GenerateFromGinRoutes(routes)
 	if err != nil {
-		log.Printf("Failed to generate from swag registry: %v. Trying route-based generation...", err)
-
-		// Fallback: generate from current gin routes
-		routes := s.baseRouter.Routes()
-		swaggerJSONBytes, err = swaggoGen.GenerateFromGinRoutes(routes)
-		if err != nil {
-			return fmt.Errorf("failed to generate swagger JSON from routes: %w", err)
-		}
-		log.Printf("Swagger JSON generated from gin routes (%d bytes)", len(swaggerJSONBytes))
-	} else {
-		log.Printf("Swagger JSON generated from swag annotations (%d bytes)", len(swaggerJSONBytes))
+		return fmt.Errorf("failed to generate swagger JSON from routes: %w", err)
 	}
 
 	// Store the generated JSON
