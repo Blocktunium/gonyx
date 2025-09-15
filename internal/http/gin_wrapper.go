@@ -205,12 +205,13 @@ func (s *GinServer) addSwagger() {
 			port = parts[1]
 		} else if len(parts) == 1 {
 			// If address is just a port like ":8080"
+			host = "127.0.0.1"
 			port = parts[0]
 		}
 	}
 
 	// Create a custom endpoint for dynamic swagger JSON at a different path
-	s.baseRouter.GET("/api/swagger.json", func(c *gin.Context) {
+	s.baseRouter.GET("/swagger/json", func(c *gin.Context) {
 		// Generate the OpenAPI specification dynamically from the routes
 		swaggerJSON := s.generateSwaggerJSON(host, port)
 		c.Header("Content-Type", "application/json")
@@ -219,8 +220,8 @@ func (s *GinServer) addSwagger() {
 
 	// Register Swagger UI handler with custom JSON URL
 	// This avoids the route conflict by using a different path for the JSON
-	swaggerURL := ginSwagger.URL(fmt.Sprintf("http://%s:%s/api/swagger.json", host, port))
-	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
+	swaggerURL := ginSwagger.URL(fmt.Sprintf("http://%s:%s/swagger/json", host, port))
+	s.baseRouter.GET("/swagger", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
 }
 
 // MARK: Public functions
