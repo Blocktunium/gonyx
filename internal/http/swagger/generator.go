@@ -2,6 +2,7 @@ package swagger
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"strings"
 )
 
@@ -76,14 +77,8 @@ func (g *Generator) processRoutes(routes interface{}, swagger map[string]interfa
 	// Track paths we've already processed (to avoid duplicates)
 	processedPaths := make(map[string]bool)
 
-	// Process routes based on the specific type
-	// In this case, assuming gin.RoutesInfo which has a slice of RouteInfo objects
-	// with Method, Path, and Handler fields
-	if ginRoutes, ok := routes.([]struct {
-		Method  string
-		Path    string
-		Handler string
-	}); ok {
+	// Process routes based on the specific type - gin.RoutesInfo
+	if ginRoutes, ok := routes.(gin.RoutesInfo); ok {
 		for _, route := range ginRoutes {
 			// Skip Swagger routes
 			if strings.HasPrefix(route.Path, "/swagger") {

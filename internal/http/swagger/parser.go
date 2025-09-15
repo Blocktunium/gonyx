@@ -163,10 +163,99 @@ func (p *CommentParser) parseSwaggerComments(commentText string, metadata map[st
 	successRegex := regexp.MustCompile(`@Success\s+(\d+)\s+{(\w+)}\s+(\w+)\s+"([^"]+)"`)
 	successMatches := successRegex.FindAllStringSubmatch(commentText, -1)
 
+	// Extract @Failure responses
+	// Format: @Failure code {type} model "description"
+	failureRegex := regexp.MustCompile(`@Failure\s+(\d+)\s+{(\w+)}\s+(\w+)\s+"([^"]+)"`)
+	failureMatches := failureRegex.FindAllStringSubmatch(commentText, -1)
+
 	responses := map[string]interface{}{}
 
+	// Process success responses
+	for _, match := range successMatches {
+		if len(match) > 4 {
+			code := match[1]
+			respType := match[2] // object, array, string, etc.
+			model := match[3]    // model name or schema type
+			description := match[4]
+
+			contentSchema := map[string]interface{}{}
+
+			// If it's a reference to a model
+			if respType == "object" && !isBuiltInType(model) {
+				contentSchema = map[string]interface{}{
+					"$ref": "#/components/schemas/" + model,
+				}
+			} else {
+				contentSchema = map[string]interface{}{
+					"type": respType,
+				}
+
+				// If it's an array of models
+				if respType == "array" && !isBuiltInType(model) {
+					contentSchema["items"] = map[string]interface{}{
+						"$ref": "#/components/schemas/" + model,
+					}
+				} else if respType == "array" {
+					contentSchema["items"] = map[string]interface{}{
+						"type": model,
+					}
+				}
+			}
+
+			responses[code] = map[string]interface{}{
+				"description": description,
+				"content": map[string]interface{}{
+					"application/json": map[string]interface{}{
+						"schema": contentSchema,
+					},
+				},
+			}
+		}
+	}
+
+	// Process failure responses
+	for _, match := range failureMatches {
+		if len(match) > 4 {
+			code := match[1]
+			respType := match[2]
+			model := match[3]
+			description := match[4]
+
+			contentSchema := map[string]interface{}{}
+
+			if respType == "object" && !isBuiltInType(model) {
+				contentSchema = map[string]interface{}{
+					"$ref": "#/components/schemas/" + model,
+				}
+			} else {
+				contentSchema = map[string]interface{}{
+					"type": respType,
+				}
+
+				if respType == "array" && !isBuiltInType(model) {
+					contentSchema["items"] = map[string]interface{}{
+						"$ref": "#/components/schemas/" + model,
+					}
+				} else if respType == "array" {
+					contentSchema["items"] = map[string]interface{}{
+						"type": model,
+					}
+				}
+			}
+
+			responses[code] = map[string]interface{}{
+				"description": description,
+				"content": map[string]interface{}{
+					"application/json": map[string]interface{}{
+						"schema": contentSchema,
+					},
+				},
+			}
+		}
+	}
+
 	// Add default responses if none are provided
-	if len(successMatches) == 0 {
+	if len(successMatches) == 0 && len(failureMatches) == 0 {
 		responses["200"] = map[string]interface{}{
 			"description": "Successful operation",
 		}
@@ -176,51 +265,40 @@ func (p *CommentParser) parseSwaggerComments(commentText string, metadata map[st
 		responses["500"] = map[string]interface{}{
 			"description": "Internal server error",
 		}
-	} else {
-		for _, match := range successMatches {
-			if len(match) > 4 {
-				code := match[1]
-				respType := match[2] // object, array, string, etc.
-				model := match[3]    // model name or schema type
-				description := match[4]
+	}
 
-				contentSchema := map[string]interface{}{}
+	metadata["responses"] = responses
 
-				// If it's a reference to a model
-				if respType == "object" && !isBuiltInType(model) {
-					contentSchema = map[string]interface{}{
-						"$ref": "#/components/schemas/" + model,
-					}
-				} else {
-					contentSchema = map[string]interface{}{
-						"type": respType,
-					}
-
-					// If it's an array of models
-					if respType == "array" && !isBuiltInType(model) {
-						contentSchema["items"] = map[string]interface{}{
-							"$ref": "#/components/schemas/" + model,
-						}
-					} else if respType == "array" {
-						contentSchema["items"] = map[string]interface{}{
-							"type": model,
-						}
-					}
-				}
-
-				responses[code] = map[string]interface{}{
-					"description": description,
-					"content": map[string]interface{}{
-						"application/json": map[string]interface{}{
-							"schema": contentSchema,
-						},
-					},
-				}
+	// Extract @Security
+	// Format: @Security SecuritySchemeName
+	securityRegex := regexp.MustCompile(`@Security\s+(\w+)`)
+	if matches := securityRegex.FindStringSubmatch(commentText); len(matches) > 1 {
+		securityScheme := strings.TrimSpace(matches[1])
+		// Map common security scheme names
+		switch strings.ToLower(securityScheme) {
+		case "apikeyauth":
+			metadata["security"] = []map[string]interface{}{
+				{"bearerAuth": []string{}},
+			}
+		case "bearerauth":
+			metadata["security"] = []map[string]interface{}{
+				{"bearerAuth": []string{}},
+			}
+		default:
+			metadata["security"] = []map[string]interface{}{
+				{securityScheme: []string{}},
 			}
 		}
 	}
 
-	metadata["responses"] = responses
+	// Extract @Router (for validation, though we get path from Gin routes)
+	// Format: @Router /path [method]
+	routerRegex := regexp.MustCompile(`@Router\s+([^\s]+)\s+\[([^\]]+)\]`)
+	if matches := routerRegex.FindStringSubmatch(commentText); len(matches) > 2 {
+		// This could be used for validation or override
+		metadata["_router_path"] = strings.TrimSpace(matches[1])
+		metadata["_router_method"] = strings.TrimSpace(matches[2])
+	}
 }
 
 // findSourceFile attempts to locate the source file containing the given handler
