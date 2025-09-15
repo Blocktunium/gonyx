@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -40,6 +42,7 @@ type GinServer struct {
 	groups                map[string]*gin.RouterGroup
 	supportedMiddlewares  []string
 	defaultRequestMethods []string
+	swaggerJSON           []byte // Store generated swagger JSON
 
 	predefinedGroups []struct {
 		name       string
@@ -115,6 +118,10 @@ func (s *GinServer) init(name string, serverConfig types.GinServerConfig, rawCon
 
 	// Add Swagger documentation if enabled
 	if s.config.Swagger.Enabled {
+		// Generate Swagger JSON programmatically using swaggo before adding routes
+		if err := s.generateSwaggerJSON(); err != nil {
+			log.Printf("Warning: Failed to generate swagger JSON: %v", err)
+		}
 		s.addSwagger()
 	}
 
@@ -190,6 +197,100 @@ func (s *GinServer) addGroup(keyName string, groupName string, router *gin.Route
 	}
 }
 
+// getProjectRoot returns the project root directory dynamically
+func getProjectRoot() string {
+	// Try to get from environment variable first
+	if projectRoot := os.Getenv("GONYX_PROJECT_ROOT"); projectRoot != "" {
+		return projectRoot
+	}
+
+	// Try to get from config
+	if projectRoot, err := config.GetManager().Get("base", "project_root"); err == nil {
+		if rootPath, ok := projectRoot.(string); ok && rootPath != "" {
+			return rootPath
+		}
+	}
+
+	// Fallback: try to determine from current working directory
+	if wd, err := os.Getwd(); err == nil {
+		// Look for go.mod file to determine project root
+		dir := wd
+		for {
+			if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+				return dir
+			}
+
+			parent := filepath.Dir(dir)
+			if parent == dir {
+				break // reached root directory
+			}
+			dir = parent
+		}
+		// If go.mod not found, use current working directory
+		return wd
+	}
+
+	// Final fallback: current directory
+	return "."
+}
+
+// generateSwaggerJSON generates swagger JSON using swaggo library programmatically
+func (s *GinServer) generateSwaggerJSON() error {
+	// Get project root directory dynamically
+	projectRoot := getProjectRoot()
+	log.Printf("Using project root: %s", projectRoot)
+
+	// Create swaggo generator
+	swaggoGen := swagger.NewSwaggoGenerator(projectRoot)
+
+	// Parse host and port for the generator
+	host := "localhost"
+	port := "3000"
+	if s.config.ListenAddress != "" {
+		parts := strings.Split(s.config.ListenAddress, ":")
+		if len(parts) > 1 {
+			if strings.HasPrefix(s.config.ListenAddress, ":") {
+				host = "127.0.0.1"
+			} else {
+				host = parts[0]
+			}
+			port = parts[1]
+		} else {
+			if strings.HasPrefix(s.config.ListenAddress, ":") {
+				host = "127.0.0.1"
+				port = parts[0]
+			} else {
+				host = parts[0]
+				port = "80"
+			}
+		}
+	}
+
+	// Set host and port in generator
+	swaggoGen.SetHostAndPort(host, port)
+
+	// First try to generate from swag registry (if annotations exist)
+	swaggerJSONBytes, err := swaggoGen.GenerateSwaggerDocs()
+	if err != nil {
+		log.Printf("Failed to generate from swag registry: %v. Trying route-based generation...", err)
+
+		// Fallback: generate from current gin routes
+		routes := s.baseRouter.Routes()
+		swaggerJSONBytes, err = swaggoGen.GenerateFromGinRoutes(routes)
+		if err != nil {
+			return fmt.Errorf("failed to generate swagger JSON from routes: %w", err)
+		}
+		log.Printf("Swagger JSON generated from gin routes (%d bytes)", len(swaggerJSONBytes))
+	} else {
+		log.Printf("Swagger JSON generated from swag annotations (%d bytes)", len(swaggerJSONBytes))
+	}
+
+	// Store the generated JSON
+	s.swaggerJSON = swaggerJSONBytes
+
+	return nil
+}
+
 // addSwagger adds Swagger documentation endpoints to the server
 func (s *GinServer) addSwagger() {
 	// Parse host and port from the listen address
@@ -220,23 +321,29 @@ func (s *GinServer) addSwagger() {
 		}
 	}
 
-	// Create a custom endpoint for dynamic swagger JSON at a different path
+	// Create endpoint to serve the pre-generated swagger JSON
 	s.baseRouter.GET("/swagger.json", func(c *gin.Context) {
-		// Generate the OpenAPI specification dynamically from the routes
 		c.Header("Content-Type", "application/json")
 
-		generatedSwaggerJSON := s.generateSwaggerJSON(host, port)
-		swaggerJSON, err := json.Marshal(generatedSwaggerJSON)
-		if err != nil {
+		if s.swaggerJSON != nil {
+			// Update host and port in the swagger JSON dynamically
+			var swaggerSpec map[string]interface{}
+			if err := json.Unmarshal(s.swaggerJSON, &swaggerSpec); err == nil {
+				swaggerSpec["host"] = fmt.Sprintf("%s:%s", host, port)
+				if updatedJSON, err := json.Marshal(swaggerSpec); err == nil {
+					c.Data(http.StatusOK, "application/json", updatedJSON)
+					return
+				}
+			}
+			// Fallback to original JSON if update fails
+			c.Data(http.StatusOK, "application/json", s.swaggerJSON)
+		} else {
 			c.Data(http.StatusOK, "application/json", []byte("{}"))
-			return
 		}
-		c.Data(http.StatusOK, "application/json", swaggerJSON)
 	})
 
 	// Register Swagger UI handler with custom JSON URL
-	// This avoids the route conflict by using a different path for the JSON
-	swaggerURL := ginSwagger.URL(fmt.Sprintf("%s:%s/swagger.json", host, port))
+	swaggerURL := ginSwagger.URL(fmt.Sprintf("http://%s:%s/swagger.json", host, port))
 	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
 }
 
@@ -426,32 +533,6 @@ func getSwaggerGenerator() *swagger.Generator {
 		swaggerGenerator = swagger.NewGenerator()
 	}
 	return swaggerGenerator
-}
-
-// generateSwaggerJSON generates OpenAPI/Swagger JSON dynamically based on registered routes
-func (s *GinServer) generateSwaggerJSON(host, port string) map[string]interface{} {
-	// Get all registered routes
-	routes := s.GetAllRoutes()
-
-	// Get app info from config
-	appName := "Gonyx API"
-	appVersion := "1.0.0"
-
-	// Try to get app info from config
-	if appNameCfg, err := config.GetManager().Get("base", "name"); err == nil && appNameCfg != nil {
-		if name, ok := appNameCfg.(string); ok && name != "" {
-			appName = name
-		}
-	}
-
-	if appVersionCfg, err := config.GetManager().Get("base", "version"); err == nil && appVersionCfg != nil {
-		if version, ok := appVersionCfg.(string); ok && version != "" {
-			appVersion = version
-		}
-	}
-
-	// Generate OpenAPI specification using our Swagger generator
-	return getSwaggerGenerator().GenerateAPI(routes, appName, appVersion, host, port)
 }
 
 // AddRouteWithMultiHandlers - add a route to the server
