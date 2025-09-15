@@ -201,7 +201,11 @@ func (s *GinServer) addSwagger() {
 		parts := strings.Split(s.config.ListenAddress, ":")
 		if len(parts) > 1 {
 			// If address is like "localhost:8080" or "127.0.0.1:8080"
-			host = parts[0]
+			if strings.HasPrefix(s.config.ListenAddress, ":") {
+				host = "127.0.0.1"
+			} else {
+				host = parts[0]
+			}
 			port = parts[1]
 		} else {
 			if strings.HasPrefix(s.config.ListenAddress, ":") {
