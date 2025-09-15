@@ -41,6 +41,7 @@ type GinServer struct {
 	groups                map[string]*gin.RouterGroup
 	supportedMiddlewares  []string
 	defaultRequestMethods []string
+	cachedSwaggerJSON     []byte // Cache for processed swagger JSON
 
 	predefinedGroups []struct {
 		name       string
@@ -324,22 +325,33 @@ func (s *GinServer) addSwagger() {
 	s.baseRouter.GET(fmt.Sprintf("/%s/swagger.json", serverName), func(c *gin.Context) {
 		c.Header("Content-Type", "application/json")
 
-		// Load and process swagger JSON with server-specific modifications
-		swaggerJSON, err := s.loadSwaggerJSON()
-		if err != nil {
-			log.Printf("Error loading swagger.json: %v", err)
-			c.Data(http.StatusOK, "application/json", []byte("{}"))
-			return
-		}
-
-		// Update host and port in the swagger JSON dynamically
-		var swaggerSpec map[string]interface{}
-		if err := json.Unmarshal(swaggerJSON, &swaggerSpec); err == nil {
-			swaggerSpec["host"] = fmt.Sprintf("%s:%s", host, port)
-			if updatedJSON, err := json.Marshal(swaggerSpec); err == nil {
-				c.Data(http.StatusOK, "application/json", updatedJSON)
+		// Check if swagger JSON is cached
+		var swaggerJSON []byte
+		var err error
+		if s.cachedSwaggerJSON != nil && len(s.cachedSwaggerJSON) > 0 {
+			// Use cached version
+			swaggerJSON = s.cachedSwaggerJSON
+		} else {
+			// Load and process swagger JSON with server-specific modifications
+			swaggerJSON, err = s.loadSwaggerJSON()
+			if err != nil {
+				log.Printf("Error loading swagger.json: %v", err)
+				c.Data(http.StatusOK, "application/json", []byte("{}"))
 				return
 			}
+
+			// Update host and port in the swagger JSON dynamically
+			var swaggerSpec map[string]interface{}
+			if err := json.Unmarshal(swaggerJSON, &swaggerSpec); err == nil {
+				swaggerSpec["host"] = fmt.Sprintf("%s:%s", host, port)
+				if updatedJSON, err := json.Marshal(swaggerSpec); err == nil {
+					c.Data(http.StatusOK, "application/json", updatedJSON)
+					return
+				}
+			}
+
+			// Cache the processed swagger JSON for future requests
+			s.cachedSwaggerJSON = swaggerJSON
 		}
 
 		// Fallback to original JSON if update fails
