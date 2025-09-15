@@ -194,7 +194,7 @@ func (s *GinServer) addGroup(keyName string, groupName string, router *gin.Route
 func (s *GinServer) addSwagger() {
 	// Parse host and port from the listen address
 	host := "localhost"
-	port := "8080"
+	port := "3000"
 
 	// Get host and port from listen address
 	if s.config.ListenAddress != "" {
@@ -203,25 +203,37 @@ func (s *GinServer) addSwagger() {
 			// If address is like "localhost:8080" or "127.0.0.1:8080"
 			host = parts[0]
 			port = parts[1]
-		} else if len(parts) == 1 {
-			// If address is just a port like ":8080"
-			host = "127.0.0.1"
-			port = parts[0]
+		} else {
+			if strings.HasPrefix(s.config.ListenAddress, ":") {
+				// If address is just a port like ":8080"
+				host = "127.0.0.1"
+				port = parts[0]
+			} else {
+				// If address is just a port like ":8080"
+				host = parts[0]
+				port = "80"
+			}
 		}
 	}
 
 	// Create a custom endpoint for dynamic swagger JSON at a different path
-	s.baseRouter.GET("/swagger/json", func(c *gin.Context) {
+	s.baseRouter.GET("/swagger.json", func(c *gin.Context) {
 		// Generate the OpenAPI specification dynamically from the routes
-		swaggerJSON := s.generateSwaggerJSON(host, port)
 		c.Header("Content-Type", "application/json")
-		c.JSON(http.StatusOK, swaggerJSON)
+
+		generatedSwaggerJSON := s.generateSwaggerJSON(host, port)
+		swaggerJSON, err := json.Marshal(generatedSwaggerJSON)
+		if err != nil {
+			c.Data(http.StatusOK, "application/json", []byte("{}"))
+			return
+		}
+		c.Data(http.StatusOK, "application/json", swaggerJSON)
 	})
 
 	// Register Swagger UI handler with custom JSON URL
 	// This avoids the route conflict by using a different path for the JSON
-	swaggerURL := ginSwagger.URL(fmt.Sprintf("http://%s:%s/swagger/json", host, port))
-	s.baseRouter.GET("/swagger", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
+	swaggerURL := ginSwagger.URL(fmt.Sprintf("%s:%s/swagger.json", host, port))
+	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
 }
 
 // MARK: Public functions
