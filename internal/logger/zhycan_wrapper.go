@@ -4,14 +4,15 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Blocktunium/gonyx/internal/config"
-	"github.com/Blocktunium/gonyx/internal/logger/types"
-	"github.com/Blocktunium/gonyx/internal/utils"
-	"gorm.io/gorm"
 	"log"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx/internal/utils"
+	"gorm.io/gorm"
 
 	"github.com/Blocktunium/gonyx/internal/logger/helpers"
 )
@@ -110,7 +111,7 @@ func (l *LogMeWrapper) Constructor(name string) error {
 								if dbType == "sql" {
 									r.dbType = dbType
 
-									insDb, err := helpers.GetSqlDbInstance("server1")
+									insDb, err := helpers.GetSqlDbInstance(useDbName)
 									if err != nil {
 										log.Printf("Cannot Db instance: %v for logger", item)
 									} else {

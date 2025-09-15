@@ -213,18 +213,8 @@ func (s *GinServer) loadSwaggerJSON() ([]byte, error) {
 	}
 
 	// Get base config for dynamic values
-	appName := "Gonyx"  // default fallback
-	appVersion := "1.0" // default fallback
-	if name, err := config.GetManager().Get("base", "name"); err == nil {
-		if nameStr, ok := name.(string); ok {
-			appName = nameStr
-		}
-	}
-	if version, err := config.GetManager().Get("base", "version"); err == nil {
-		if versionStr, ok := version.(string); ok {
-			appVersion = versionStr
-		}
-	}
+	appName := config.GetManager().GetName()
+	appVersion := config.GetManager().GetVersion()
 
 	// Update info section
 	if info, ok := swaggerSpec["info"].(map[string]interface{}); ok {
@@ -254,10 +244,9 @@ func (s *GinServer) loadSwaggerJSON() ([]byte, error) {
 }
 
 // isPathSupportedByServer checks if a given API path is supported by this server
-// based on the server's configured versions and groups
+// based on the server's configured versions and actual registered routes
 func (s *GinServer) isPathSupportedByServer(path string) bool {
 	// Extract version from path (e.g., /api/v1/users -> v1)
-	// Extract group from path if applicable
 	parts := strings.Split(strings.Trim(path, "/"), "/")
 
 	// Check for version pattern like /api/v1/, /api/v2/, etc.
@@ -286,9 +275,16 @@ func (s *GinServer) isPathSupportedByServer(path string) bool {
 		}
 	}
 
-	// For now, if no version is specified or version is supported, include the path
-	// TODO: Add group-based filtering when group information is available in swagger paths
-	return true
+	// Check if the path actually exists in the server's registered routes
+	allRoutes := s.GetAllRoutes()
+	for _, route := range allRoutes {
+		if route.Path == path {
+			return true
+		}
+	}
+
+	// Path not found in registered routes
+	return false
 }
 
 // addSwagger adds Swagger documentation endpoints to the server
