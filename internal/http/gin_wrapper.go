@@ -14,7 +14,6 @@ import (
 
 	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/Blocktunium/gonyx/internal/http/middlewares"
-	"github.com/Blocktunium/gonyx/internal/http/swagger"
 	"github.com/Blocktunium/gonyx/internal/http/types"
 	"github.com/Blocktunium/gonyx/internal/logger"
 	logTypes "github.com/Blocktunium/gonyx/internal/logger/types"
@@ -42,7 +41,6 @@ type GinServer struct {
 	groups                map[string]*gin.RouterGroup
 	supportedMiddlewares  []string
 	defaultRequestMethods []string
-	swaggerJSON           []byte // Store generated swagger JSON
 
 	predefinedGroups []struct {
 		name       string
@@ -118,10 +116,6 @@ func (s *GinServer) init(name string, serverConfig types.GinServerConfig, rawCon
 
 	// Add Swagger documentation if enabled
 	if s.config.Swagger.Enabled {
-		// Generate Swagger JSON programmatically using swaggo before adding routes
-		if err := s.generateSwaggerJSON(); err != nil {
-			log.Printf("Warning: Failed to generate swagger JSON: %v", err)
-		}
 		s.addSwagger()
 	}
 
@@ -197,89 +191,22 @@ func (s *GinServer) addGroup(keyName string, groupName string, router *gin.Route
 	}
 }
 
-// getProjectRoot returns the project root directory dynamically
-func getProjectRoot() string {
-	// Try to get from environment variable first
-	if projectRoot := os.Getenv("GONYX_PROJECT_ROOT"); projectRoot != "" {
-		return projectRoot
+// loadSwaggerJSON loads swagger JSON from docs/swagger.json file
+func loadSwaggerJSON() ([]byte, error) {
+	swaggerPath := filepath.Join("docs", "swagger.json")
+
+	// Check if file exists
+	if _, err := os.Stat(swaggerPath); os.IsNotExist(err) {
+		return nil, fmt.Errorf("swagger.json not found at %s", swaggerPath)
 	}
 
-	// Try to get from config
-	if projectRoot, err := config.GetManager().Get("base", "project_root"); err == nil {
-		if rootPath, ok := projectRoot.(string); ok && rootPath != "" {
-			return rootPath
-		}
-	}
-
-	// Fallback: try to determine from current working directory
-	if wd, err := os.Getwd(); err == nil {
-		// Look for go.mod file to determine project root
-		dir := wd
-		for {
-			if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-				return dir
-			}
-
-			parent := filepath.Dir(dir)
-			if parent == dir {
-				break // reached root directory
-			}
-			dir = parent
-		}
-		// If go.mod not found, use current working directory
-		return wd
-	}
-
-	// Final fallback: current directory
-	return "."
-}
-
-// generateSwaggerJSON generates swagger JSON using swaggo library programmatically
-func (s *GinServer) generateSwaggerJSON() error {
-	// Get project root directory dynamically
-	projectRoot := getProjectRoot()
-	log.Printf("Using project root: %s", projectRoot)
-
-	// Create swaggo generator
-	swaggoGen := swagger.NewSwaggoGenerator(projectRoot)
-
-	// Parse host and port for the generator
-	host := "localhost"
-	port := "3000"
-	if s.config.ListenAddress != "" {
-		parts := strings.Split(s.config.ListenAddress, ":")
-		if len(parts) > 1 {
-			if strings.HasPrefix(s.config.ListenAddress, ":") {
-				host = "127.0.0.1"
-			} else {
-				host = parts[0]
-			}
-			port = parts[1]
-		} else {
-			if strings.HasPrefix(s.config.ListenAddress, ":") {
-				host = "127.0.0.1"
-				port = parts[0]
-			} else {
-				host = parts[0]
-				port = "80"
-			}
-		}
-	}
-
-	// Set host and port in generator
-	swaggoGen.SetHostAndPort(host, port)
-
-	// First try to generate from swag registry (if annotations exist)
-	routes := s.baseRouter.Routes()
-	swaggerJSONBytes, err := swaggoGen.GenerateFromGinRoutes(routes)
+	// Read the file
+	swaggerJSON, err := os.ReadFile(swaggerPath)
 	if err != nil {
-		return fmt.Errorf("failed to generate swagger JSON from routes: %w", err)
+		return nil, fmt.Errorf("failed to read swagger.json: %w", err)
 	}
 
-	// Store the generated JSON
-	s.swaggerJSON = swaggerJSONBytes
-
-	return nil
+	return swaggerJSON, nil
 }
 
 // addSwagger adds Swagger documentation endpoints to the server
@@ -312,25 +239,30 @@ func (s *GinServer) addSwagger() {
 		}
 	}
 
-	// Create endpoint to serve the pre-generated swagger JSON
+	// Create endpoint to serve swagger JSON from docs/swagger.json file
 	s.baseRouter.GET("/swagger.json", func(c *gin.Context) {
 		c.Header("Content-Type", "application/json")
 
-		if s.swaggerJSON != nil {
-			// Update host and port in the swagger JSON dynamically
-			var swaggerSpec map[string]interface{}
-			if err := json.Unmarshal(s.swaggerJSON, &swaggerSpec); err == nil {
-				swaggerSpec["host"] = fmt.Sprintf("%s:%s", host, port)
-				if updatedJSON, err := json.Marshal(swaggerSpec); err == nil {
-					c.Data(http.StatusOK, "application/json", updatedJSON)
-					return
-				}
-			}
-			// Fallback to original JSON if update fails
-			c.Data(http.StatusOK, "application/json", s.swaggerJSON)
-		} else {
+		// Load swagger JSON from file
+		swaggerJSON, err := loadSwaggerJSON()
+		if err != nil {
+			log.Printf("Error loading swagger.json: %v", err)
 			c.Data(http.StatusOK, "application/json", []byte("{}"))
+			return
 		}
+
+		// Update host and port in the swagger JSON dynamically
+		var swaggerSpec map[string]interface{}
+		if err := json.Unmarshal(swaggerJSON, &swaggerSpec); err == nil {
+			swaggerSpec["host"] = fmt.Sprintf("%s:%s", host, port)
+			if updatedJSON, err := json.Marshal(swaggerSpec); err == nil {
+				c.Data(http.StatusOK, "application/json", updatedJSON)
+				return
+			}
+		}
+
+		// Fallback to original JSON if update fails
+		c.Data(http.StatusOK, "application/json", swaggerJSON)
 	})
 
 	// Register Swagger UI handler with custom JSON URL
@@ -513,17 +445,6 @@ func (s *GinServer) AddRoute(method string, path string, f func(c *gin.Context),
 	}
 
 	return NewNotSupportedHttpMethodErr(method)
-}
-
-// swaggerGenerator is a singleton instance of the Swagger generator
-var swaggerGenerator *swagger.Generator
-
-// getSwaggerGenerator initializes or returns the Swagger generator
-func getSwaggerGenerator() *swagger.Generator {
-	if swaggerGenerator == nil {
-		swaggerGenerator = swagger.NewGenerator()
-	}
-	return swaggerGenerator
 }
 
 // AddRouteWithMultiHandlers - add a route to the server
