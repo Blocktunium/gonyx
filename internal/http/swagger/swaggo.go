@@ -8,8 +8,6 @@ import (
 	"go/token"
 	"log"
 	"path/filepath"
-	"reflect"
-	"runtime"
 	"strings"
 
 	"github.com/gin-gonic/gin"
