@@ -318,7 +318,7 @@ func (s *GinServer) addSwagger() {
 	}
 
 	// Use this server instance's name for swagger paths
-	serverName := s.name
+	serverName := s.config.Name
 
 	// Create endpoint to serve swagger JSON from docs/swagger.json file
 	s.baseRouter.GET(fmt.Sprintf("/%s/swagger.json", serverName), func(c *gin.Context) {
