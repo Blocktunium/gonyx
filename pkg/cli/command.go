@@ -9,4 +9,5 @@ import (
 func AttachCommands(cmd *cobra.Command) {
 	cmd.AddCommand(command.NewRunServerCmd())      // Run Server Command
 	cmd.AddCommand(command.NewCompileCommandCmd()) // Compile protobuf Command
+	cmd.AddCommand(command.NewGenerateCmd())       // Generate Command
 }
