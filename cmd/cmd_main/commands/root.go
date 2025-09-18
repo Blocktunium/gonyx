@@ -4,6 +4,7 @@ Copyright © 2022 NAME HERE abolfazl.beh@gmail.com
 package commands
 
 import (
+	"github.com/Blocktunium/gonyx/internal/command"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -41,4 +42,5 @@ func init() {
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	rootCmd.AddCommand(NewInitCmd())
+	rootCmd.AddCommand(command.NewGenerateCmd())
 }

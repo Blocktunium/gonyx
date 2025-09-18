@@ -2,14 +2,15 @@ package command
 
 import (
 	"fmt"
-	"github.com/Blocktunium/gonyx/internal/cache"
-	"github.com/Blocktunium/gonyx/internal/grpc"
-	"github.com/Blocktunium/gonyx/internal/http"
-	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	"github.com/Blocktunium/gonyx/internal/cache"
+	"github.com/Blocktunium/gonyx/internal/grpc"
+	"github.com/Blocktunium/gonyx/internal/http"
+	"github.com/spf13/cobra"
 )
 
 const (
