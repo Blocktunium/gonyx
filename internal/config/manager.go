@@ -3,12 +3,13 @@ package config
 // Imports needed list
 import (
 	"fmt"
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/viper"
 	"log"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 )
 
 // Mark: manager
@@ -186,6 +187,11 @@ func (p *manager) GetConfigWrapper(category string) (*ViperWrapper, error) {
 // GetName - returns service instance name based on config
 func (p *manager) GetName() string {
 	return viper.GetString("name")
+}
+
+// GetVersion - returns service instance name based on config
+func (p *manager) GetVersion() string {
+	return viper.GetString("version")
 }
 
 // GetOperationType - returns operation type which could be `dev`, `prod`

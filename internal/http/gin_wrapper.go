@@ -5,6 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/Blocktunium/gonyx/internal/config"
 	"github.com/Blocktunium/gonyx/internal/http/middlewares"
 	"github.com/Blocktunium/gonyx/internal/http/types"
@@ -12,10 +19,8 @@ import (
 	logTypes "github.com/Blocktunium/gonyx/internal/logger/types"
 	"github.com/Blocktunium/gonyx/internal/utils"
 	"github.com/gin-gonic/gin"
-	"log"
-	"net/http"
-	"strings"
-	"time"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // MARK: Variables
@@ -36,6 +41,7 @@ type GinServer struct {
 	groups                map[string]*gin.RouterGroup
 	supportedMiddlewares  []string
 	defaultRequestMethods []string
+	cachedSwaggerJSON     []byte // Cache for processed swagger JSON
 
 	predefinedGroups []struct {
 		name       string
@@ -66,6 +72,15 @@ func (s *GinServer) init(name string, serverConfig types.GinServerConfig, rawCon
 			s.defaultRequestMethods = s.config.Config.RequestMethods
 		}
 	}
+
+	// Set Gin mode based on environment
+	ginMode := gin.ReleaseMode
+	if env, err := config.GetManager().Get("app", "env"); err == nil {
+		if env == "dev" {
+			ginMode = gin.DebugMode
+		}
+	}
+	gin.SetMode(ginMode)
 
 	s.baseRouter = gin.New()
 
@@ -98,6 +113,11 @@ func (s *GinServer) init(name string, serverConfig types.GinServerConfig, rawCon
 				s.AddRoute(item.method, item.path, item.f[0], item.routeName, item.versions, item.groups)
 			}
 		}
+	}
+
+	// Add Swagger documentation if enabled
+	if s.config.Swagger.Enabled {
+		s.addSwagger()
 	}
 
 	return nil
@@ -161,7 +181,7 @@ func (s *GinServer) attachMiddlewares(orders []string, rawConfig map[string]inte
 }
 
 func (s *GinServer) setupStatic() {
-
+	// Add static file serving functionality here if needed
 }
 
 func (s *GinServer) addGroup(keyName string, groupName string, router *gin.RouterGroup, f gin.HandlerFunc) {
@@ -172,10 +192,176 @@ func (s *GinServer) addGroup(keyName string, groupName string, router *gin.Route
 	}
 }
 
-//func (s *GinServer) addSwagger() {
-//	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json")
-//	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-//}
+// loadSwaggerJSON loads swagger JSON from docs/swagger.json file and applies server-specific modifications
+func (s *GinServer) loadSwaggerJSON() ([]byte, error) {
+	swaggerPath := filepath.Join("docs", "swagger.json")
+
+	// Check if file exists
+	if _, err := os.Stat(swaggerPath); os.IsNotExist(err) {
+		return nil, fmt.Errorf("swagger.json not found at %s", swaggerPath)
+	}
+
+	// Read the file
+	swaggerJSON, err := os.ReadFile(swaggerPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read swagger.json: %w", err)
+	}
+
+	// Parse JSON for modifications
+	var swaggerSpec map[string]interface{}
+	if err := json.Unmarshal(swaggerJSON, &swaggerSpec); err != nil {
+		return nil, fmt.Errorf("failed to parse swagger.json: %w", err)
+	}
+
+	// Get base config for dynamic values
+	appName := config.GetManager().GetName()
+	appVersion := config.GetManager().GetVersion()
+
+	// Update info section
+	if info, ok := swaggerSpec["info"].(map[string]interface{}); ok {
+		info["title"] = fmt.Sprintf("%s API", appName)
+		info["version"] = appVersion
+		info["description"] = fmt.Sprintf("This is a %s API server built with Gonyx framework", appName)
+	}
+
+	// Filter paths based on server's supported versions and groups
+	if paths, ok := swaggerSpec["paths"].(map[string]interface{}); ok {
+		filteredPaths := make(map[string]interface{})
+		for path, pathItem := range paths {
+			if s.isPathSupportedByServer(path) {
+				filteredPaths[path] = pathItem
+			}
+		}
+		swaggerSpec["paths"] = filteredPaths
+	}
+
+	// Marshal back to JSON
+	updatedJSON, err := json.Marshal(swaggerSpec)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal updated swagger.json: %w", err)
+	}
+
+	return updatedJSON, nil
+}
+
+// isPathSupportedByServer checks if a given API path is supported by this server
+// based on the server's configured versions and actual registered routes
+func (s *GinServer) isPathSupportedByServer(path string) bool {
+	// Extract version from path (e.g., /api/v1/users -> v1)
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+
+	// Check for version pattern like /api/v1/, /api/v2/, etc.
+	pathVersion := ""
+	for _, part := range parts {
+		if strings.HasPrefix(part, "v") && len(part) > 1 {
+			// Check if it's a version like v1, v2, etc.
+			if part[1:] != "" {
+				pathVersion = part
+				break
+			}
+		}
+	}
+
+	// If path has a version, check if server supports it
+	if pathVersion != "" {
+		supported := false
+		for _, supportedVersion := range s.config.Versions {
+			if supportedVersion == pathVersion {
+				supported = true
+				break
+			}
+		}
+		if !supported {
+			return false
+		}
+	}
+
+	// Check if the path actually exists in the server's registered routes
+	allRoutes := s.GetAllRoutes()
+	for _, route := range allRoutes {
+		if route.Path == path {
+			return true
+		}
+	}
+
+	// Path not found in registered routes
+	return false
+}
+
+// addSwagger adds Swagger documentation endpoints to the server
+func (s *GinServer) addSwagger() {
+	// Parse host and port from the listen address
+	host := "localhost"
+	port := "3000"
+
+	// Get host and port from listen address
+	if s.config.ListenAddress != "" {
+		parts := strings.Split(s.config.ListenAddress, ":")
+		if len(parts) > 1 {
+			// If address is like "localhost:8080" or "127.0.0.1:8080"
+			if strings.HasPrefix(s.config.ListenAddress, ":") {
+				host = "127.0.0.1"
+			} else {
+				host = parts[0]
+			}
+			port = parts[1]
+		} else {
+			if strings.HasPrefix(s.config.ListenAddress, ":") {
+				// If address is just a port like ":8080"
+				host = "127.0.0.1"
+				port = parts[0]
+			} else {
+				// If address is just a port like ":8080"
+				host = parts[0]
+				port = "80"
+			}
+		}
+	}
+
+	// Use this server instance's name for swagger paths
+	serverName := s.config.Name
+
+	// Create endpoint to serve swagger JSON from docs/swagger.json file
+	s.baseRouter.GET(fmt.Sprintf("/%s/swagger.json", serverName), func(c *gin.Context) {
+		c.Header("Content-Type", "application/json")
+
+		// Check if swagger JSON is cached
+		var swaggerJSON []byte
+		var err error
+		if s.cachedSwaggerJSON != nil && len(s.cachedSwaggerJSON) > 0 {
+			// Use cached version
+			swaggerJSON = s.cachedSwaggerJSON
+		} else {
+			// Load and process swagger JSON with server-specific modifications
+			swaggerJSON, err = s.loadSwaggerJSON()
+			if err != nil {
+				log.Printf("Error loading swagger.json: %v", err)
+				c.Data(http.StatusOK, "application/json", []byte("{}"))
+				return
+			}
+
+			// Update host and port in the swagger JSON dynamically
+			var swaggerSpec map[string]interface{}
+			if err := json.Unmarshal(swaggerJSON, &swaggerSpec); err == nil {
+				swaggerSpec["host"] = fmt.Sprintf("%s:%s", host, port)
+				if updatedJSON, err := json.Marshal(swaggerSpec); err == nil {
+					c.Data(http.StatusOK, "application/json", updatedJSON)
+					return
+				}
+			}
+
+			// Cache the processed swagger JSON for future requests
+			s.cachedSwaggerJSON = swaggerJSON
+		}
+
+		// Fallback to original JSON if update fails
+		c.Data(http.StatusOK, "application/json", swaggerJSON)
+	})
+
+	// Register Swagger UI handler with custom JSON URL including server name
+	swaggerURL := ginSwagger.URL(fmt.Sprintf("http://%s:%s/%s/swagger.json", host, port, serverName))
+	s.baseRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
+}
 
 // MARK: Public functions
 

@@ -2,11 +2,12 @@ package command
 
 import (
 	"fmt"
-	"github.com/Blocktunium/gonyx/internal/config"
-	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/spf13/cobra"
 )
 
 const (

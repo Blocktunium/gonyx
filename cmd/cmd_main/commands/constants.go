@@ -299,6 +299,7 @@ DerivedData/
 
 	baseConfigTmpl = `{
   "name": "{{.ProjectName}}",
+  "version": "1.0.0",
   "config_must_watched": true,
   "config_remote_addr": "0.0.0.0:7777",
   "config_remote_infra": "grpc",
@@ -370,6 +371,9 @@ DerivedData/
             "allow_files": false,
             "option_response_status_code": 204
         }
+      },
+      "swagger": {
+        "enabled": false
       }
     }
   ]
@@ -482,6 +486,18 @@ import (
 type App struct {}
 
 // Init - initialize the app
+// @title {{.ProjectName}} API
+// @version 1.0
+// @description This is the {{.ProjectName}} API server built with Gonyx framework
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:3000
+// @BasePath /
+// @schemes http https
 func (app *App) Init() {
     engine.RegisterRestfulController(&SampleController{})
 
