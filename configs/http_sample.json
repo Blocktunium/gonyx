@@ -28,13 +28,29 @@
         "request_methods": ["ALL"]
       },
       "middlewares": {
-        "order": ["logger", "favicon"],
+        "order": ["logger", "cors", "favicon"],
         "logger": {
           "format": "[${time}] ${status} - ${latency} ${method} ${path}\n",
           "time_format": "15:04:05",
           "time_zone": "Local",
           "time_interval": 500,
           "output": "stdout"
+        },
+        "cors": {
+          "allow_all_origins": false,
+          "allow_origins": ["https://localhost:3000", "https://example.com"],
+          "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+          "allow_private_network": false,
+          "allow_headers": ["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
+          "allow_credentials": true,
+          "expose_headers": ["X-Total-Count"],
+          "max_age": 86400,
+          "allow_wildcard": true,
+          "allow_browser_extensions": false,
+          "custom_schemas": [],
+          "allow_websockets": false,
+          "allow_files": false,
+          "options_response_status_code": 204
         },
         "favicon": {
             "file": "./favicon.ico",
