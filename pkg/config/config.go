@@ -50,6 +50,10 @@ func GetHostName() string {
 	return ""
 }
 
+func GetConfigWrapper(category string) (*config.ViperWrapper, error) {
+	return config.GetManager().GetConfigWrapper(category)
+}
+
 // Get - get value of the key in specific category
 func Get(category string, name string) (interface{}, error) {
 	return config.GetManager().Get(category, name)

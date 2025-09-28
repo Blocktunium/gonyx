@@ -2,9 +2,8 @@ package mongokit
 
 import (
 	"fmt"
-	"github.com/Blocktunium/gonyx/internal/config"
-	"github.com/Blocktunium/gonyx/internal/logger/types"
-	"github.com/Blocktunium/gonyx/internal/utils"
+	"github.com/Blocktunium/gonyx/pkg/config"
+	"github.com/Blocktunium/gonyx/pkg/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"strings"
@@ -43,7 +42,7 @@ func (m *manager) init() {
 	m.supportedDBs = []string{"mongodb"}
 
 	// read configs
-	connectionsObj, err := config.GetManager().Get(m.name, "connections")
+	connectionsObj, err := config.Get(m.name, "connections")
 	if err != nil {
 		return
 	}
@@ -54,14 +53,14 @@ func (m *manager) init() {
 		dbInstanceName := item.(string)
 
 		dbTypeKey := fmt.Sprintf("%s.%s", dbInstanceName, "type")
-		dbTypeInf, err := config.GetManager().Get(m.name, dbTypeKey)
+		dbTypeInf, err := config.Get(m.name, dbTypeKey)
 		if err != nil {
 			continue
 		}
 
 		//  create a new instance based on type
 		dbType := strings.ToLower(dbTypeInf.(string))
-		if utils.ArrayContains(&m.supportedDBs, dbType) {
+		if arrayContains(&m.supportedDBs, dbType) {
 			switch dbType {
 			case "mongodb":
 				obj, err := NewMongoWrapper(fmt.Sprintf("db/%s", dbInstanceName))
@@ -80,7 +79,7 @@ func (m *manager) init() {
 // restartOnChangeConfig - subscribe a function for when the config is changed
 func (m *manager) restartOnChangeConfig() {
 	// Config config server to reload
-	wrapper, err := config.GetManager().GetConfigWrapper(m.name)
+	wrapper, err := config.GetConfigWrapper(m.name)
 	if err == nil {
 		wrapper.RegisterChangeCallback(func() interface{} {
 			if m.isManagerInitialized {
@@ -116,7 +115,8 @@ func (m *manager) GetMongoDb(instanceName string) (*mongo.Database, error) {
 	return nil, NewNotExistServiceNameErr(instanceName)
 }
 
-func (m *manager) RegisterLogger(l types.Logger) {
-	//for _, item := range m.mongoDbInstances {
-	//}
+func (m *manager) RegisterLogger(l logger.Logger) {
+	// for _, item := range m.mongoDbInstances {
+	// 	item.RegisterLogger(l)
+	// }
 }

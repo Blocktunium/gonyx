@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

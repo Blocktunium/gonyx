@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Blocktunium/gonyx/contrib/mongokit/extensions"
-	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx-mongokit/extensions"
+	"github.com/Blocktunium/gonyx/pkg/config"
+	"github.com/Blocktunium/gonyx/pkg/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"strings"
@@ -28,7 +29,7 @@ func (m *MongoWrapper) init(name string) error {
 	nameParts := strings.Split(m.name, "/")
 
 	var tempConfig *Mongo
-	tempConfigObj, err := config.GetManager().Get(nameParts[0], nameParts[1])
+	tempConfigObj, err := config.Get(nameParts[0], nameParts[1])
 	if err == nil {
 		// first marshal
 		configData, err := json.Marshal(tempConfigObj)
@@ -39,37 +40,37 @@ func (m *MongoWrapper) init(name string) error {
 	m.config = tempConfig
 
 	//dbNameKey := fmt.Sprintf("%s.%s", nameParts[1], "db")
-	//dbNameStr, err := config.GetManager().Get(nameParts[0], dbNameKey)
+	//dbNameStr, err := config.Get(nameParts[0], dbNameKey)
 	//if err != nil {
 	//	return err
 	//}
 	//
 	//hostKey := fmt.Sprintf("%s.%s", nameParts[1], "host")
-	//hostStr, err := config.GetManager().Get(nameParts[0], hostKey)
+	//hostStr, err := config.Get(nameParts[0], hostKey)
 	//if err != nil {
 	//	return err
 	//}
 	//
 	//portKey := fmt.Sprintf("%s.%s", nameParts[1], "port")
-	//portStr, err := config.GetManager().Get(nameParts[0], portKey)
+	//portStr, err := config.Get(nameParts[0], portKey)
 	//if err != nil {
 	//	return err
 	//}
 	//
 	//usernameKey := fmt.Sprintf("%s.%s", nameParts[1], "username")
-	//usernameStr, err := config.GetManager().Get(nameParts[0], usernameKey)
+	//usernameStr, err := config.Get(nameParts[0], usernameKey)
 	//if err != nil {
 	//	return err
 	//}
 	//
 	//passwordKey := fmt.Sprintf("%s.%s", nameParts[1], "password")
-	//passwordStr, err := config.GetManager().Get(nameParts[0], passwordKey)
+	//passwordStr, err := config.Get(nameParts[0], passwordKey)
 	//if err != nil {
 	//	return err
 	//}
 
 	optionsKey := fmt.Sprintf("%s.%s", nameParts[1], "options")
-	optionsObj, err := config.GetManager().Get(nameParts[0], optionsKey)
+	optionsObj, err := config.Get(nameParts[0], optionsKey)
 	if err != nil {
 		return err
 	}
@@ -83,7 +84,7 @@ func (m *MongoWrapper) init(name string) error {
 	var internalLogger *MongoLoggerConfig
 
 	internalLoggerKey := fmt.Sprintf("%s.%s", nameParts[1], "logger")
-	internalLoggerObj, err := config.GetManager().Get(nameParts[0], internalLoggerKey)
+	internalLoggerObj, err := config.Get(nameParts[0], internalLoggerKey)
 	if err == nil {
 		// first marshal
 		configData, err := json.Marshal(internalLoggerObj)
@@ -179,4 +180,10 @@ func NewMongoWrapper(name string) (*MongoWrapper, error) {
 	}
 
 	return wrapper, nil
+}
+
+// RegisterLogger - register logger instance
+func (m *MongoWrapper) RegisterLogger(l logger.Logger) {
+	// MongoDB driver handles logging internally, so we store the logger for potential future use
+	// The actual logging is handled by the mongo driver's options.LoggerOptions
 }

@@ -3,9 +3,9 @@ package gormkit
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Blocktunium/gonyx/contrib/gormkit/extensions"
-	"github.com/Blocktunium/gonyx/internal/config"
-	"github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx-gormkit/extensions"
+	"github.com/Blocktunium/gonyx/pkg/config"
+	"github.com/Blocktunium/gonyx/pkg/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -22,7 +22,7 @@ type SqlWrapper[T SqlConfigurable] struct {
 	name             string
 	config           T
 	databaseInstance *gorm.DB
-	logger           types.Logger
+	logger           logger.Logger // Gonyx logger interface
 }
 
 // init - SqlWrapper Constructor - It initializes the wrapper
@@ -34,13 +34,13 @@ func (s *SqlWrapper[T]) init(name string) error {
 
 	if reflect.ValueOf(s.config).Type() == reflect.TypeOf(Sqlite{}) {
 		filenameKey := fmt.Sprintf("%s.%s", nameParts[1], "db")
-		filenameStr, err := config.GetManager().Get(nameParts[0], filenameKey)
+		filenameStr, err := config.Get(nameParts[0], filenameKey)
 		if err != nil {
 			return err
 		}
 
 		optionsKey := fmt.Sprintf("%s.%s", nameParts[1], "options")
-		optionsObj, err := config.GetManager().Get(nameParts[0], optionsKey)
+		optionsObj, err := config.Get(nameParts[0], optionsKey)
 		if err != nil {
 			return err
 		}
@@ -53,7 +53,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var internalConfig *Config
 
 		internalConfigKey := fmt.Sprintf("%s.%s", nameParts[1], "config")
-		internalConfigObj, err := config.GetManager().Get(nameParts[0], internalConfigKey)
+		internalConfigObj, err := config.Get(nameParts[0], internalConfigKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(internalConfigObj)
@@ -65,7 +65,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var internalLogger *LoggerConfig
 
 		internalLoggerKey := fmt.Sprintf("%s.%s", nameParts[1], "logger")
-		internalLoggerObj, err := config.GetManager().Get(nameParts[0], internalLoggerKey)
+		internalLoggerObj, err := config.Get(nameParts[0], internalLoggerKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(internalLoggerObj)
@@ -82,43 +82,43 @@ func (s *SqlWrapper[T]) init(name string) error {
 		}).Interface().(T)
 	} else if reflect.ValueOf(s.config).Type() == reflect.TypeOf(Mysql{}) {
 		dbNameKey := fmt.Sprintf("%s.%s", nameParts[1], "db")
-		dbNameStr, err := config.GetManager().Get(nameParts[0], dbNameKey)
+		dbNameStr, err := config.Get(nameParts[0], dbNameKey)
 		if err != nil {
 			return err
 		}
 
 		hostKey := fmt.Sprintf("%s.%s", nameParts[1], "host")
-		hostStr, err := config.GetManager().Get(nameParts[0], hostKey)
+		hostStr, err := config.Get(nameParts[0], hostKey)
 		if err != nil {
 			return err
 		}
 
 		portKey := fmt.Sprintf("%s.%s", nameParts[1], "port")
-		portStr, err := config.GetManager().Get(nameParts[0], portKey)
+		portStr, err := config.Get(nameParts[0], portKey)
 		if err != nil {
 			return err
 		}
 
 		protocolKey := fmt.Sprintf("%s.%s", nameParts[1], "protocol")
-		protocolStr, err := config.GetManager().Get(nameParts[0], protocolKey)
+		protocolStr, err := config.Get(nameParts[0], protocolKey)
 		if err != nil {
 			return err
 		}
 
 		usernameKey := fmt.Sprintf("%s.%s", nameParts[1], "username")
-		usernameStr, err := config.GetManager().Get(nameParts[0], usernameKey)
+		usernameStr, err := config.Get(nameParts[0], usernameKey)
 		if err != nil {
 			return err
 		}
 
 		passwordKey := fmt.Sprintf("%s.%s", nameParts[1], "password")
-		passwordStr, err := config.GetManager().Get(nameParts[0], passwordKey)
+		passwordStr, err := config.Get(nameParts[0], passwordKey)
 		if err != nil {
 			return err
 		}
 
 		optionsKey := fmt.Sprintf("%s.%s", nameParts[1], "options")
-		optionsObj, err := config.GetManager().Get(nameParts[0], optionsKey)
+		optionsObj, err := config.Get(nameParts[0], optionsKey)
 		if err != nil {
 			return err
 		}
@@ -131,7 +131,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var internalConfig *Config
 
 		internalConfigKey := fmt.Sprintf("%s.%s", nameParts[1], "config")
-		internalConfigObj, err := config.GetManager().Get(nameParts[0], internalConfigKey)
+		internalConfigObj, err := config.Get(nameParts[0], internalConfigKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(internalConfigObj)
@@ -143,7 +143,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var internalLogger *LoggerConfig
 
 		internalLoggerKey := fmt.Sprintf("%s.%s", nameParts[1], "logger")
-		internalLoggerObj, err := config.GetManager().Get(nameParts[0], internalLoggerKey)
+		internalLoggerObj, err := config.Get(nameParts[0], internalLoggerKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(internalLoggerObj)
@@ -155,7 +155,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var specificConfig *MysqlSpecificConfig
 
 		specificConfigKey := fmt.Sprintf("%s.%s", nameParts[1], "specific_config")
-		specificConfigObj, err := config.GetManager().Get(nameParts[0], specificConfigKey)
+		specificConfigObj, err := config.Get(nameParts[0], specificConfigKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(specificConfigObj)
@@ -178,37 +178,37 @@ func (s *SqlWrapper[T]) init(name string) error {
 		}).Interface().(T)
 	} else if reflect.ValueOf(s.config).Type() == reflect.TypeOf(Postgresql{}) {
 		dbNameKey := fmt.Sprintf("%s.%s", nameParts[1], "db")
-		dbNameStr, err := config.GetManager().Get(nameParts[0], dbNameKey)
+		dbNameStr, err := config.Get(nameParts[0], dbNameKey)
 		if err != nil {
 			return err
 		}
 
 		hostKey := fmt.Sprintf("%s.%s", nameParts[1], "host")
-		hostStr, err := config.GetManager().Get(nameParts[0], hostKey)
+		hostStr, err := config.Get(nameParts[0], hostKey)
 		if err != nil {
 			return err
 		}
 
 		portKey := fmt.Sprintf("%s.%s", nameParts[1], "port")
-		portStr, err := config.GetManager().Get(nameParts[0], portKey)
+		portStr, err := config.Get(nameParts[0], portKey)
 		if err != nil {
 			return err
 		}
 
 		usernameKey := fmt.Sprintf("%s.%s", nameParts[1], "username")
-		usernameStr, err := config.GetManager().Get(nameParts[0], usernameKey)
+		usernameStr, err := config.Get(nameParts[0], usernameKey)
 		if err != nil {
 			return err
 		}
 
 		passwordKey := fmt.Sprintf("%s.%s", nameParts[1], "password")
-		passwordStr, err := config.GetManager().Get(nameParts[0], passwordKey)
+		passwordStr, err := config.Get(nameParts[0], passwordKey)
 		if err != nil {
 			return err
 		}
 
 		optionsKey := fmt.Sprintf("%s.%s", nameParts[1], "options")
-		optionsObj, err := config.GetManager().Get(nameParts[0], optionsKey)
+		optionsObj, err := config.Get(nameParts[0], optionsKey)
 		if err != nil {
 			return err
 		}
@@ -221,7 +221,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var internalConfig *Config
 
 		internalConfigKey := fmt.Sprintf("%s.%s", nameParts[1], "config")
-		internalConfigObj, err := config.GetManager().Get(nameParts[0], internalConfigKey)
+		internalConfigObj, err := config.Get(nameParts[0], internalConfigKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(internalConfigObj)
@@ -233,7 +233,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var internalLogger *LoggerConfig
 
 		internalLoggerKey := fmt.Sprintf("%s.%s", nameParts[1], "logger")
-		internalLoggerObj, err := config.GetManager().Get(nameParts[0], internalLoggerKey)
+		internalLoggerObj, err := config.Get(nameParts[0], internalLoggerKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(internalLoggerObj)
@@ -245,7 +245,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 		var specificConfig *PostgresqlSpecificConfig
 
 		specificConfigKey := fmt.Sprintf("%s.%s", nameParts[1], "specific_config")
-		specificConfigObj, err := config.GetManager().Get(nameParts[0], specificConfigKey)
+		specificConfigObj, err := config.Get(nameParts[0], specificConfigKey)
 		if err == nil {
 			// first marshal
 			configData, err := json.Marshal(specificConfigObj)
@@ -273,7 +273,7 @@ func (s *SqlWrapper[T]) init(name string) error {
 // MARK: Public functions
 
 // RegisterLogger - register logger instance
-func (s *SqlWrapper[T]) RegisterLogger(l types.Logger) {
+func (s *SqlWrapper[T]) RegisterLogger(l logger.Logger) {
 	s.logger = l
 }
 

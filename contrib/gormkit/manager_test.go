@@ -1,7 +1,7 @@
 package gormkit
 
 import (
-	"github.com/Blocktunium/gonyx/internal/config"
+	"github.com/Blocktunium/gonyx/pkg/config"
 	"gorm.io/gorm"
 	"reflect"
 	"testing"
@@ -73,5 +73,5 @@ func makeReadyConfigManager() {
 	initialMode := "test"
 	prefix := "Gonyx"
 
-	_ = config.CreateManager(path, initialMode, prefix)
+	_ = config.InitializeManager(path, initialMode, prefix)
 }

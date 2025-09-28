@@ -4,17 +4,21 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Blocktunium/gonyx/internal/config"
-	"github.com/Blocktunium/gonyx/internal/logger"
-	"github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx/pkg/config"
+	"github.com/Blocktunium/gonyx/pkg/logger"
 	"github.com/redis/go-redis/v9"
 	"sync"
 	"time"
 )
 
 var (
-	redisMaintenanceType = types.NewLogType("REDIS_MAINTENANCE")
+	redisMaintenanceType logger.LogType
 )
+
+func init() {
+	// Initialize log type for Redis operations
+	redisMaintenanceType = logger.NewLogType("REDIS_MAINTENANCE")
+}
 
 // Client represents a Redis client with various operations
 type Client struct {
@@ -29,9 +33,11 @@ type Client struct {
 
 // Init initializes the Redis client with the provided configuration
 func (c *Client) Init(name string, configPrefix string, keyPrefix string) error {
-	l, _ := logger.GetManager().GetLogger()
+	l, _ := logger.GetLogger()
 	if l != nil {
-		l.Log(types.NewLogObject(types.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Init Start", nil))
+		if logObj := logger.NewLogObject(logger.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Init Start", nil); logObj != nil {
+			l.Log(logObj)
+		}
 	}
 
 	c.wg.Add(1)
@@ -41,57 +47,57 @@ func (c *Client) Init(name string, configPrefix string, keyPrefix string) error 
 	c.prefix = keyPrefix
 	c.initialized = false
 
-	addr, err := config.GetManager().Get(name, configPrefix+".address")
+	addr, err := config.Get(name, configPrefix+".address")
 	if err != nil {
 		return err
 	}
 
-	password, err := config.GetManager().Get(name, configPrefix+".password")
+	password, err := config.Get(name, configPrefix+".password")
 	if err != nil {
 		return err
 	}
 
-	db, err := config.GetManager().Get(name, configPrefix+".db")
+	db, err := config.Get(name, configPrefix+".db")
 	if err != nil {
 		return err
 	}
 
-	maxRetries, err := config.GetManager().Get(name, configPrefix+".max_retries")
+	maxRetries, err := config.Get(name, configPrefix+".max_retries")
 	if err != nil {
 		return err
 	}
 
-	minRetryBackOff, err := config.GetManager().Get(name, configPrefix+".min_retry_backoff")
+	minRetryBackOff, err := config.Get(name, configPrefix+".min_retry_backoff")
 	if err != nil {
 		return err
 	}
 
-	maxRetryBackOff, err := config.GetManager().Get(name, configPrefix+".max_retry_backoff")
+	maxRetryBackOff, err := config.Get(name, configPrefix+".max_retry_backoff")
 	if err != nil {
 		return err
 	}
 
-	dialTimeout, err := config.GetManager().Get(name, configPrefix+".dial_timeout")
+	dialTimeout, err := config.Get(name, configPrefix+".dial_timeout")
 	if err != nil {
 		return err
 	}
 
-	readTimeout, err := config.GetManager().Get(name, configPrefix+".read_timeout")
+	readTimeout, err := config.Get(name, configPrefix+".read_timeout")
 	if err != nil {
 		return err
 	}
 
-	writeTimeout, err := config.GetManager().Get(name, configPrefix+".write_timeout")
+	writeTimeout, err := config.Get(name, configPrefix+".write_timeout")
 	if err != nil {
 		return err
 	}
 
-	onConnectLog, err := config.GetManager().Get(name, configPrefix+".on_connect_log")
+	onConnectLog, err := config.Get(name, configPrefix+".on_connect_log")
 	if err != nil {
 		return err
 	}
 
-	lockEnable, err := config.GetManager().Get(name, configPrefix+".enable_lock")
+	lockEnable, err := config.Get(name, configPrefix+".enable_lock")
 	if err != nil {
 		return err
 	}
@@ -128,7 +134,9 @@ func (c *Client) Init(name string, configPrefix string, keyPrefix string) error 
 	c.initialized = true
 
 	if l != nil {
-		l.Log(types.NewLogObject(types.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Init End", nil))
+		if logObj := logger.NewLogObject(logger.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Init End", nil); logObj != nil {
+			l.Log(logObj)
+		}
 	}
 
 	return nil
@@ -136,9 +144,11 @@ func (c *Client) Init(name string, configPrefix string, keyPrefix string) error 
 
 // Ping checks if the Redis server is reachable
 func (c *Client) Ping(ctx context.Context) error {
-	l, _ := logger.GetManager().GetLogger()
+	l, _ := logger.GetLogger()
 	if l != nil {
-		l.Log(types.NewLogObject(types.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Ping Start", nil))
+		if logObj := logger.NewLogObject(logger.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Ping Start", nil); logObj != nil {
+			l.Log(logObj)
+		}
 	}
 
 	_, err := c.client.Ping(ctx).Result()
@@ -147,7 +157,9 @@ func (c *Client) Ping(ctx context.Context) error {
 	}
 
 	if l != nil {
-		l.Log(types.NewLogObject(types.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Ping End", nil))
+		if logObj := logger.NewLogObject(logger.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Ping End", nil); logObj != nil {
+			l.Log(logObj)
+		}
 	}
 	return nil
 }
@@ -161,15 +173,19 @@ func (c *Client) IsInitialized() bool {
 func (c *Client) Close() error {
 	c.wg.Wait()
 
-	l, _ := logger.GetManager().GetLogger()
+	l, _ := logger.GetLogger()
 	if l != nil {
-		l.Log(types.NewLogObject(types.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Redis Connection Close Start", nil))
+		if logObj := logger.NewLogObject(logger.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Redis Connection Close Start", nil); logObj != nil {
+			l.Log(logObj)
+		}
 	}
 
 	err := c.client.Close()
 	if err == nil {
 		if l != nil {
-			l.Log(types.NewLogObject(types.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Redis Connection Close End", nil))
+			if logObj := logger.NewLogObject(logger.DEBUG, "RedisKit", redisMaintenanceType, time.Now(), "Redis Connection Close End", nil); logObj != nil {
+				l.Log(logObj)
+			}
 		}
 	}
 

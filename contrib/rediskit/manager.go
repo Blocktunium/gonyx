@@ -3,9 +3,8 @@ package rediskit
 import (
 	"errors"
 	"fmt"
-	"github.com/Blocktunium/gonyx/internal/config"
-	"github.com/Blocktunium/gonyx/internal/logger"
-	"github.com/Blocktunium/gonyx/internal/logger/types"
+	"github.com/Blocktunium/gonyx/pkg/config"
+	"github.com/Blocktunium/gonyx/pkg/logger"
 	"log"
 	"sync"
 	"time"
@@ -37,13 +36,13 @@ func (m *Manager) initialize() {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 
-	prefix := config.GetManager().GetName()
+	prefix := config.GetName()
 	if prefix == "" {
 		return
 	}
 
 	// Read Redis connections configuration
-	connectionsObj, err := config.GetManager().Get(m.name, "connections")
+	connectionsObj, err := config.Get(m.name, "connections")
 	if err != nil {
 		return
 	}
@@ -53,21 +52,21 @@ func (m *Manager) initialize() {
 	for _, item := range connectionsObj.([]interface{}) {
 		instanceName := item.(string)
 
-		redisType, err := config.GetManager().Get(m.name, fmt.Sprintf("%s.%s", instanceName, "type"))
+		redisType, err := config.Get(m.name, fmt.Sprintf("%s.%s", instanceName, "type"))
 		if err != nil {
 			return
 		}
 
-		withPrefix, err := config.GetManager().Get(m.name, fmt.Sprintf("%s.%s", instanceName, "add_service_prefix"))
+		withPrefix, err := config.Get(m.name, fmt.Sprintf("%s.%s", instanceName, "add_service_prefix"))
 		if err != nil {
 			return
 		}
 		withPrefixBool := withPrefix.(bool)
 
-		logger, _ := logger.GetManager().GetLogger()
+		loggerInstance, _ := logger.GetLogger()
 
 		// Register callback for config changes
-		wrapper, err := config.GetManager().GetConfigWrapper(m.name)
+		wrapper, err := config.GetConfigWrapper(m.name)
 		if err == nil {
 			wrapper.RegisterChangeCallback(func() interface{} {
 				err := m.Release()
@@ -83,14 +82,16 @@ func (m *Manager) initialize() {
 			client := &Client{}
 			prefix := ""
 			if withPrefixBool {
-				prefix = config.GetManager().GetName()
+				prefix = config.GetName()
 			}
 
 			err = client.Init(m.name, fmt.Sprintf("%s.%s", instanceName, redisType), prefix)
 			if err != nil {
-				if logger != nil {
-					logger.Log(types.NewLogObject(types.ERROR, "RedisKit.Manager", redisMaintenanceType,
-						time.Now(), "Redis Client initialization failed", err))
+				if loggerInstance != nil {
+					if logObj := logger.NewLogObject(logger.ERROR, "RedisKit.Manager", redisMaintenanceType,
+						time.Now(), "Redis Client initialization failed", err); logObj != nil {
+						loggerInstance.Log(logObj)
+					}
 				}
 				return
 			}
@@ -98,9 +99,11 @@ func (m *Manager) initialize() {
 			m.clients[instanceName] = client
 		} else if redisType == "cluster" {
 			// TODO: Add support for Redis cluster
-			if logger != nil {
-				logger.Log(types.NewLogObject(types.WARNING, "RedisKit.Manager", redisMaintenanceType,
-					time.Now(), "Redis Cluster not implemented yet", nil))
+			if loggerInstance != nil {
+				if logObj := logger.NewLogObject(logger.WARNING, "RedisKit.Manager", redisMaintenanceType,
+					time.Now(), "Redis Cluster not implemented yet", nil); logObj != nil {
+					loggerInstance.Log(logObj)
+				}
 			}
 		}
 	}
@@ -110,7 +113,7 @@ func (m *Manager) initialize() {
 
 // restartOnConfigChange sets up a listener for configuration changes
 func (m *Manager) restartOnConfigChange() {
-	wrapper, err := config.GetManager().GetConfigWrapper(m.name)
+	wrapper, err := config.GetConfigWrapper(m.name)
 	if err == nil {
 		wrapper.RegisterChangeCallback(func() interface{} {
 			if m.isManagerInitialized {

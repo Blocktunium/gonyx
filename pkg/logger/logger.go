@@ -11,6 +11,15 @@ type LogObject types.LogObject
 type LogLevel types.LogLevel
 type LogType types.LogType
 
+// Logger interface - using pkg types instead of internal types
+type Logger interface {
+	Constructor(name string) error
+	Close()
+	Log(obj *LogObject)
+	IsInitialized() bool
+	Sync()
+}
+
 // Some Constants - used with LogLevel
 const (
 	DEBUG   LogLevel = LogLevel(types.DEBUG)
@@ -23,6 +32,11 @@ var (
 	FuncMaintenanceType LogType = LogType(types.NewLogType(types.FuncMaintenanceType.String()))
 	DebugType           LogType = LogType(types.NewLogType(types.DebugType.String()))
 )
+
+// NewLogType - Create a new log type
+func NewLogType(name string) LogType {
+	return LogType(types.NewLogType(name))
+}
 
 // NewLogObject - enhance method to create and return reference of LogObject
 func NewLogObject(level LogLevel, module string, logType LogType, eventTime time.Time, message interface{}, additional interface{}) *LogObject {
@@ -77,4 +91,49 @@ func Close() *LogError {
 
 	p := LogError(*err)
 	return &p
+}
+
+// loggerAdapter adapts internal logger to pkg Logger interface
+type loggerAdapter struct {
+	internal types.Logger
+}
+
+func (la *loggerAdapter) Constructor(name string) error {
+	return la.internal.Constructor(name)
+}
+
+func (la *loggerAdapter) Close() {
+	la.internal.Close()
+}
+
+func (la *loggerAdapter) Log(obj *LogObject) {
+	// Convert pkg LogObject to internal types LogObject
+	internalObj := &types.LogObject{
+		Level:      types.LogLevel(obj.Level),
+		Module:     obj.Module,
+		LogType:    obj.LogType,
+		Time:       obj.Time,
+		Additional: obj.Additional,
+		Message:    obj.Message,
+	}
+	la.internal.Log(internalObj)
+}
+
+func (la *loggerAdapter) IsInitialized() bool {
+	return la.internal.IsInitialized()
+}
+
+func (la *loggerAdapter) Sync() {
+	la.internal.Sync()
+}
+
+// GetLogger - returns the logger interface
+func GetLogger() (Logger, *LogError) {
+	l, err := logger.GetManager().GetLogger()
+	if err == nil {
+		return &loggerAdapter{internal: l}, nil
+	}
+
+	p := LogError(*err)
+	return nil, &p
 }
