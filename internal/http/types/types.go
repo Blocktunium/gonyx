@@ -67,7 +67,7 @@ type CorsMiddlewareConfig struct {
 	AllowFiles bool `json:"allow_files"`
 
 	// OptionsResponseStatusCode sets the status code for OPTIONS responses
-	OptionsResponseStatusCode int `json:"options_response_status_code"`
+	OptionsResponseStatusCode float64 `json:"options_response_status_code"`
 }
 
 type GinServerConfig struct {

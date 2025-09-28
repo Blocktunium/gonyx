@@ -29,7 +29,7 @@ func CorsMiddleware(config *types.CorsMiddlewareConfig) gin.HandlerFunc {
 		CustomSchemas:             config.CustomSchemas,
 		AllowWebSockets:           config.AllowWebSockets,
 		AllowFiles:                config.AllowFiles,
-		OptionsResponseStatusCode: config.OptionsResponseStatusCode,
+		OptionsResponseStatusCode: int(config.OptionsResponseStatusCode),
 	}
 
 	return cors.New(corsConfig)
