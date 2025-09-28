@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"time"
+
 	"github.com/Blocktunium/gonyx/internal/http/types"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -21,7 +23,7 @@ func CorsMiddleware(config *types.CorsMiddlewareConfig) gin.HandlerFunc {
 		AllowHeaders:              config.AllowHeaders,
 		AllowCredentials:          config.AllowCredentials,
 		ExposeHeaders:             config.ExposeHeaders,
-		MaxAge:                    config.MaxAge,
+		MaxAge:                    time.Duration(config.MaxAge) * time.Second,
 		AllowWildcard:             config.AllowWildcard,
 		AllowBrowserExtensions:    config.AllowBrowserExtensions,
 		CustomSchemas:             config.CustomSchemas,
