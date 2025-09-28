@@ -49,7 +49,7 @@ type CorsMiddlewareConfig struct {
 	ExposeHeaders []string `json:"expose_headers"`
 
 	// MaxAge indicates how long (in seconds) the results can be cached
-	MaxAge time.Duration `json:"max_age"`
+	MaxAge int `json:"max_age"`
 
 	// AllowWildcard indicates if wildcards are allowed in origins
 	AllowWildcard bool `json:"allow_wildcard"`

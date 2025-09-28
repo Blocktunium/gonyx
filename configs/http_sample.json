@@ -44,7 +44,7 @@
           "allow_headers": ["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
           "allow_credentials": true,
           "expose_headers": ["X-Total-Count"],
-          "max_age": "24h",
+          "max_age": 86400,
           "allow_wildcard": true,
           "allow_browser_extensions": false,
           "custom_schemas": [],
