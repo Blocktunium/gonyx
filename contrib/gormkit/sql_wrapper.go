@@ -3,7 +3,7 @@ package gormkit
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Blocktunium/gonyx-gormkit/extensions"
+	"github.com/Blocktunium/gonyx/contrib/gormkit/extensions"
 	"github.com/Blocktunium/gonyx/pkg/config"
 	"github.com/Blocktunium/gonyx/pkg/logger"
 	"gorm.io/driver/mysql"

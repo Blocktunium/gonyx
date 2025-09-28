@@ -1,9 +1,9 @@
-module github.com/Blocktunium/gonyx-mongokit
+module github.com/Blocktunium/gonyx/contrib/mongokit
 
 go 1.23.0
 
 require (
-	github.com/Blocktunium/gonyx v0.3.18
+	github.com/Blocktunium/gonyx v0.3.20
 	go.mongodb.org/mongo-driver v1.12.1
 )
 

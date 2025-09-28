@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Blocktunium/gonyx-mongokit/extensions"
+	"github.com/Blocktunium/gonyx/contrib/mongokit/extensions"
 	"github.com/Blocktunium/gonyx/pkg/config"
 	"github.com/Blocktunium/gonyx/pkg/logger"
 	"go.mongodb.org/mongo-driver/mongo"

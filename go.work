@@ -1,0 +1,6 @@
+go 1.23.0
+
+use .
+use ./contrib/gormkit
+use ./contrib/mongokit
+use ./contrib/rediskit
