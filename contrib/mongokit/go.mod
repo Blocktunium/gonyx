@@ -3,7 +3,7 @@ module github.com/Blocktunium/gonyx/contrib/mongokit
 go 1.23.0
 
 require (
-	github.com/Blocktunium/gonyx v0.0.0-00010101000000-000000000000
+	github.com/Blocktunium/gonyx v0.0.0
 	go.mongodb.org/mongo-driver v1.12.1
 )
 
@@ -51,4 +51,4 @@ require (
 	gorm.io/gorm v1.25.2 // indirect
 )
 
-replace github.com/Blocktunium/gonyx => ../../
+// replace github.com/Blocktunium/gonyx => ../../

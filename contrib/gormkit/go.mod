@@ -3,7 +3,7 @@ module github.com/Blocktunium/gonyx/contrib/gormkit
 go 1.23.0
 
 require (
-	github.com/Blocktunium/gonyx v0.0.0-00010101000000-000000000000
+	github.com/Blocktunium/gonyx v0.0.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/driver/sqlite v1.5.2
@@ -51,4 +51,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/Blocktunium/gonyx => ../../
+// replace github.com/Blocktunium/gonyx => ../../
