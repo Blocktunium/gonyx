@@ -65,6 +65,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.5
+	github.com/gorilla/websocket v1.5.3
 )
 
 require (
@@ -409,10 +410,12 @@ File: "app/controller.go" --> {{ .Time.Format .TimeFormat }} by {{.CreatorUserNa
 package app
 
 import (
+	netHttp "net/http"
 	"context"
 	"fmt"
 	"github.com/Blocktunium/gonyx/pkg/http"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"{{.ProjectName}}/app/proto/greeter"
 )
 
@@ -433,12 +436,70 @@ func (ctrl *SampleController) Routes() []http.HttpRoute {
 			RouteName: "hello",
 			F:         ctrl.GetHello,
 		},
+		http.HttpRoute{
+			Method:    http.MethodGet,
+			Path:      "/ws",
+			RouteName: "ws",
+			F:         ctrl.WebSocketHandler,
+		},		
 	}
 }
 
 // GetHello - just return the 'Hello World' string to user
+// @Summary Get Hello World
+// @Description Returns a simple "Hello World" message
+// @Tags Sample
+// @Produce plain
+// @Success 200 {string} string "Hello World"
+// @Router /api/v1/sample/hello [get]
 func (ctrl *SampleController) GetHello(c *gin.Context) {
 	c.String(200, "Hello World")
+}
+
+// WebSocketHandler - establishes a WebSocket connection for real-time bidirectional communication
+// @Summary WebSocket Connection Endpoint
+// @Description Upgrades HTTP connection to WebSocket protocol for real-time bidirectional communication. Echoes back any received message.
+// @Tags Sample
+// @Success 101 {string} string "Switching Protocols - WebSocket connection established"
+// @Failure 400 {string} string "Bad Request - WebSocket upgrade failed"
+// @Router /api/v1/sample/ws [get]
+func (ctrl *SampleController) WebSocketHandler(c *gin.Context) {
+	// Upgrader specifies parameters for upgrading an HTTP connection to a
+	// WebSocket connection.
+	//
+	// It is safe to call Upgrader's methods concurrently.
+	upgrader := websocket.Upgrader{
+		CheckOrigin: func(r *netHttp.Request) bool {
+			// You can add origin checks here for security
+			return true
+		},
+	}
+
+	// upgrades the HTTP server connection to the WebSocket protocol.
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		fmt.Println("WebSocket upgrade error:", err)
+		return
+	}
+	defer conn.Close()
+
+	// Actual send/recv logic
+	for {
+		messageType, msg, err := conn.ReadMessage()
+		if err != nil {
+			fmt.Println("Read error:", err)
+			break
+		}
+
+		fmt.Printf("Received message: %s\n", msg)
+
+		// Echo message back to client
+		err = conn.WriteMessage(messageType, []byte("Echo: "+string(msg)))
+		if err != nil {
+			fmt.Println("Write error:", err)
+			break
+		}
+	}
 }
 
 // MARK: gRPC Controller
